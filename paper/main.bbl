@@ -45,7 +45,8 @@ Bastian Hagedorn, Bin Fan, Hanfeng Chen, Cris Cecka, Michael Garland, and Vinod
 Bohan Hou, Hongyi Jin, Guanjie Wang, et~al.
 \newblock Axe: A simple unified layout abstraction for machine learning
   compilers, 2026.
-\newblock arXiv:2601.19092.
+\newblock arXiv:2601.19092v2; later versions are titled ``{TIRx}: A Unified
+  Tile Primitive {ML} Compiler Across Heterogeneous Backends''.
 
 \bibitem{isaksen2002}
 Daniel~C. Isaksen.
@@ -89,7 +90,8 @@ Jay Shah.
 \bibitem{tavakkoli2025}
 Amir~Mohammad Tavakkoli, Cosmin Oancea, and Mary Hall.
 \newblock {LEGO}: Layout expression for generating one-to-one mapping, 2025.
-\newblock arXiv:2505.08091.
+\newblock arXiv:2505.08091v1; later versions are titled ``{LEGO}: A Layout
+  Expression Language for Code Generation of Hierarchical Mapping''.
 
 \bibitem{mathlib2020}
 {The mathlib Community}.
