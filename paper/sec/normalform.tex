@@ -1,0 +1,126 @@
+\section{Normal forms: which functions are layouts?}\label{sec:normalform}
+
+Different layouts can have the same function---$(4,8):(1,4)$ and $32:1$, for instance. CuTe's
+\code{coalesce} removes this redundancy. Carlisle et al.~\cite{carlisle2026} proved that for
+non-negative integer strides it computes a normal form. We re-derive this from the floor-sum form,
+for arbitrary $\D$, in a way that also says which \emph{functions} are layouts at all.
+
+\subsection{The floor expansion of a function}
+
+\begin{lemma}[floor expansion\mech]\label{lem:expansion}
+Let $N\ge1$ and let $g\colon\rng N\to\D$ satisfy $g(0)=0$. There are unique coefficients
+$\jump_Q\in\D$, $1\le Q<N$, such that
+\begin{equation}\label{eq:expansion}
+ g(x)=\sum_{Q=1}^{N-1}\floor{\frac{x}{Q}}\cdot\jump_Q\qquad\text{for all }x\in\rng N .
+\end{equation}
+They are given by $\jump_Q=\sum_{e\mid Q}\mu(Q/e)\cdot\bigl(g(e)-g(e-1)\bigr)$, with $\mu$ the
+M\"obius function. The same holds for $N=\infty$, i.e.\ for functions on $\N$.
+{\rm(}For $N=1$ the expansion is empty.{\rm)}
+\end{lemma}
+\begin{proof}
+In the equation for $g(x)$ only the $\jump_Q$ with $Q\le x$ occur, and $\jump_x$ occurs with
+coefficient $\floor{x/x}=1$; the system is unitriangular, hence uniquely solvable. Taking first
+differences in~\eqref{eq:expansion} gives $g(x)-g(x-1)=\sum_{Q\mid x}\jump_Q$, and M\"obius
+inversion gives the formula.
+\end{proof}
+
+\begin{definition}[floor spectrum]
+In the situation of \cref{lem:expansion}, $\jump_1$ is the \emph{slope} of $g$ (for $N\ge2$) and
+$\spec(g)=\{Q\ge2:\jump_Q\neq0\}$ is its \emph{floor spectrum}; its members are the
+\emph{spectral scales} of $g$.
+\end{definition}
+
+\noindent\emph{Conventions for degenerate modes.} The function $\bnd L$ does not depend on the
+strides of unit modes, and the only function on $\rng1$ that vanishes at $0$ is $0$, represented
+by every layout $\lay1d$. When a canonical choice is needed we give unit modes the stride $0$ and write the
+layout of size $1$ as $\lay10$. Several modes may share a scale ($P_i=P_{i+1}$ when $s_i=1$); what
+matters is the \emph{total} jump at a scale, the sum of the jumps $\jump_i$ over the indices $i$
+with that value of $P_i$.
+
+By \cref{prop:floorsum} the floor expansion of a layout function is its floor-sum form: the slope
+is $d_0$ (plus the jumps at scale~$1$ that leading unit modes may contribute), and the coefficient
+at a scale $Q$ is the total jump at $Q$. The converse is the main result of this section.
+
+\begin{theorem}[layouts have chain spectra\mech]\label{thm:spectrum}
+Let $S$ be a shape of size $N$ and let $g\colon\rng N\to\D$ with $g(0)=0$. Then
+\[ g\text{ is $S$-additive}\iff\spec(g)\subseteq\Sc(S). \]
+Consequently:
+\begin{enumerate}[label=(\alph*),itemsep=1pt]
+\item $g$ is the function of some layout if and only if $\spec(g)$ is a chain under divisibility
+ all of whose members divide $N$.
+\item In that case the shapes over which $g$ is a layout are exactly the shapes $S$ of size $N$
+ with $\Sc(S)\supseteq\spec(g)$. For $N\ge2$ there is among them exactly one without unit modes
+ and of minimal rank, namely the one with $\Sc(S)=\spec(g)$.
+\item Two layouts of the same size have the same function if and only if they have the same floor
+ expansion.
+\end{enumerate}
+\end{theorem}
+\begin{proof}
+Let $g=\bnd{\lay SD}$. In~\eqref{eq:floorsum}, restricted to $\rng N$, a term with $P_i=N$
+vanishes and a term with $P_i=1$ is linear; collecting terms with equal $P_i$ yields an expansion
+of the form~\eqref{eq:expansion} whose coefficients at $Q\ge2$ vanish unless $Q\in\Sc(S)$. By
+uniqueness it is \emph{the} floor expansion of $g$, so $\spec(g)\subseteq\Sc(S)$. Conversely
+suppose $\spec(g)\subseteq\Sc(S)$; we may assume $N\ge2$, the case $N=1$ being trivial. For each $Q\in\Sc(S)$ pick one index $i(Q)$ with $P_{i(Q)}=Q$,
+and let $D$ be the stride tuple with slope $\jump_1$, jump $\jump_Q$ at index $i(Q)$, and jump
+$0$ at all other indices. By \cref{prop:floorsum} the function of $\lay SD$ has the same floor
+expansion as $g$, hence equals $g$; by \cref{prop:additive} $g$ is $S$-additive. Parts (a)--(c)
+follow because $\{\Sc(S)\}$, for $S$ ranging over the shapes of size $N$, is exactly the set of
+divisibility chains of divisors of $N$ in $\{2,\dots,N-1\}$ (\cref{def:shape}).
+\end{proof}
+
+\begin{corollary}[coalesce is a normal form]\label{cor:coalesce}
+Let $L$ be a flat layout. Deleting unit modes, and merging two adjacent modes
+$(s_{i-1},s_i):(d_{i-1},d_i)$ into $\lay{s_{i-1}s_i}{d_{i-1}}$ whenever the jump
+$d_i-s_{i-1}d_{i-1}$ vanishes, does not change $\bnd{L}$. The layout obtained when no such step
+applies---the \emph{coalesced} layout $\coal(L)$---depends only on $\bnd{L}$: it is the unique
+layout without unit modes, all of whose jumps are non-zero, with function $\bnd L$.
+{\rm(}A layout of size $1$ coalesces to $1:0$.{\rm)}
+\end{corollary}
+\begin{proof}
+Deleting a unit mode at index $i$ replaces the jumps $\jump_i,\jump_{i+1}$ at the common scale
+$P_i=P_{i+1}$ by their sum (or, for $i=0$, adds $\jump_1$ to the slope; for $i=m-1$, deletes a
+jump at scale $N$); merging deletes a zero jump. Neither changes the floor expansion. A layout
+without unit modes has pairwise distinct scales $P_1<\dots<P_{m-1}$ in $\{2,\dots,N-1\}$, so if
+all its jumps are non-zero then $\Sc(S)=\spec(\bnd L)$, and \cref{thm:spectrum}(b) applies.
+\end{proof}
+
+\Cref{cor:coalesce} is the theorem of Carlisle et al.\ \cite[Prop.~2.1.4.18--19]{carlisle2026},
+now for strides in any abelian group. \Cref{thm:spectrum}(a) is new: it describes the set of
+layout functions without mentioning shapes or strides, and it yields a decision procedure.
+
+\begin{corollary}[recognition]\label{cor:recognition}
+Given the values $g(0),\dots,g(N-1)$, one can decide whether $g$ is a layout function, and if so
+output $\coal$ of a layout representing it, with $O(N\log N)$ group operations and tests for
+zero: check that $g(0)=0$, compute the first differences, apply the M\"obius transform, and test
+whether its support in $\{2,\dots,N-1\}$ is a divisibility chain dividing $N$.
+\end{corollary}
+
+\noindent This answers, for functions given by their values, the question left open
+in~\cite[\S3.7]{bhaskaracharya2025} of recovering shape and stride from a mapping.
+
+\begin{example}
+For $g=(0,0,1,1,2,2)$ on $\rng6$ the differences are $(0,1,0,1,0)$ at $x=1,\dots,5$, whose
+M\"obius transform is $\jump_2=1$ and zero elsewhere. The spectrum $\{2\}$ is a chain dividing $6$,
+so $g$ is the layout $(2,3):(0,1)$. For $g=(0,0,0,0,1,1)$ we get $\spec(g)=\{4\}$ and $4\nmid6$: not
+a layout. For $g(x)=\floor{x/2}+\floor{x/3}$ on $\rng{12}$ the spectrum $\{2,3\}$ is not a chain:
+not a layout, although both summands are.
+\end{example}
+
+\begin{remark}[the set of layout functions]\label{rem:arrangement}
+Let $N\ge2$. For a fixed chain $C$ the layout functions with spectrum in $C$ form a subgroup
+$\mathcal L_C\cong\D^{1+|C|}$ of $\D^{\rng N}$, and the set of all layout functions on $\rng N$ is
+the union of the $\mathcal L_C$ over the maximal chains, which correspond to the ordered prime
+factorisations of $N$. Unless $N$ is a prime power (when there is only one maximal chain) or $\D$
+is trivial, this union of subgroups is not a subgroup: the sum of two layout functions is a
+layout function exactly when the union of their spectra is a chain. This is the structural reason
+why the layout algebra is partial; the corresponding statement for composites is
+\cref{thm:exact}(iv).
+\end{remark}
+
+\begin{remark}[extended functions]\label{rem:extended}
+All of this holds verbatim on $\N$: the extended layout functions are exactly the functions
+$g\colon\N\to\D$ whose floor spectrum is a finite divisibility chain. On $\N$ a jump at scale
+$|S|$ is visible; it is carried by a trailing unit mode, which is why CuTe has, besides
+\code{coalesce}, a variant that keeps one (\code{coalesce\_x} in C++, \code{coalesce\_z} in
+PyCuTe).
+\end{remark}

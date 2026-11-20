@@ -1,0 +1,223 @@
+\section{Complement, division and product}\label{sec:complement}
+
+In this section layouts are $\N$-valued unless stated otherwise, and the \emph{image} of a layout
+$A$ is the set $\bnd A(\rng{|A|})\subseteq\N$.
+
+\subsection{Complements are direct-sum decompositions of an interval}
+
+CuTe's complement is meant to describe ``the elements not touched by $A$'' as the layout of the
+\emph{repetitions} of $A$. The clean way to say this is with sumsets.
+
+\begin{definition}\label{def:directsum}
+For $I,J\subseteq\N$ and $M\ge1$ we write $I\oplus J=\rng M$ if $(a,b)\mapsto a+b$ is a bijection
+$I\times J\to\rng M$. A layout $C$ is a \emph{complement of $A$ in $\rng M$} if the concatenated
+layout $(A,C)$ is a bijection onto $\rng M$; equivalently, $\bnd A$ and $\bnd C$ are injective and
+their images $I,J$ satisfy $I\oplus J=\rng M$.
+\end{definition}
+
+Pairs $(I,J)$ with $I\oplus J=\rng M$ are a classical subject, known as Krasner factorisations
+(see~\cite{bodini2006}). De~Bruijn~\cite{debruijn1956} determined the pairs with $I\oplus J=\N$;
+for the finite case we use the formulation of Long~\cite{long1967}:
+
+\begin{theorem}[Long {\cite[Thm.~1]{long1967}}]\label{thm:long}
+Let $M\ge2$. Sets $I,J\subseteq\N$ satisfy $I\oplus J=\rng M$ if and only if there are integers
+$m_1,\dots,m_r\ge2$ with $m_1\cdots m_r=M$ such that, with $M_k=m_1\cdots m_k$, one of the two
+sets consists of all sums $\sum_{k\text{ even}}x_kM_k$ and the other of all sums
+$\sum_{k\text{ odd}}x_kM_k$, where $0\le x_k<m_{k+1}$ and $0\le k<r$.
+\end{theorem}
+
+\noindent In words: the direct-sum decompositions of an interval are exactly the splittings of the
+digits of some mixed-radix system into the even and the odd positions. Both summands are
+therefore images of layouts, and CuTe's formula for the complement---interleave the modes of $A$,
+sorted by stride, with the modes that fill the gaps---is the only thing a complement can be. The
+complement is moreover unique as a set, as noted by Bodini and Rivals~\cite[\S3]{bodini2006}; we
+include the short argument.
+
+\begin{proposition}[uniqueness {\cite{bodini2006}}]\label{prop:unique-complement}
+For $I\subseteq\N$ and $M\ge1$ there is at most one $J\subseteq\N$ with $I\oplus J=\rng M$.
+\end{proposition}
+\begin{proof}
+Let $J\neq J'$ both qualify; then $0\in I\cap J\cap J'$. Let $z$ be the least element in which
+$J$ and $J'$ differ, say $z\in J\setminus J'$. Since $z=0+z\in\rng M=I\oplus J'$, we have $z=a+b'$
+with $a\in I$, $b'\in J'$; as $z\notin J'$, $a>0$ and $b'<z$, so $b'\in J$. Then $z=0+z=a+b'$
+are two representations in $I+J$, a contradiction.
+\end{proof}
+
+\begin{theorem}[complement]\label{thm:complement}
+Let $A$ be an $\N$-valued layout with injective function and image $I$, with at least one non-unit
+mode, and let $M\ge1$. Let $(d_{(0)},s_{(0)}),\dots,(d_{(k)},s_{(k)})$ be the strides and sizes of
+its non-unit modes, sorted by stride. The following are equivalent:
+\begin{enumerate}[label=(\roman*),itemsep=1pt]
+\item there is a set $J$ with $I\oplus J=\rng M$;
+\item $A$ has a complement in $\rng M$;
+\item $s_{(i)}d_{(i)}\mid d_{(i+1)}$ for $0\le i<k$, and $s_{(k)}d_{(k)}\mid M$.
+\end{enumerate}
+In that case $J$ is the image of
+\begin{equation}\label{eq:complement}
+ C=\lay{\Bigl(d_{(0)},\ \frac{d_{(1)}}{s_{(0)}d_{(0)}},\ \dots,\ \frac{d_{(k)}}{s_{(k-1)}d_{(k-1)}},\ \frac{M}{s_{(k)}d_{(k)}}\Bigr)}{\bigl(1,\ s_{(0)}d_{(0)},\ \dots,\ s_{(k)}d_{(k)}\bigr)},
+\end{equation}
+$\bnd C$ is increasing, and $\coal(C)$ is the only coalesced layout with increasing function that
+is a complement of $A$ in $\rng M$. {\rm(}If all modes of $A$ are unit modes then $I=\{0\}$ and the
+complement is $\lay M1$.{\rm)}
+\end{theorem}
+\begin{proof}
+Injectivity gives $d_{(0)}\ge1$.
+(iii)$\Rightarrow$(ii): sorting the modes of $(A,C)$ by stride gives the column-major layout with
+shape $(d_{(0)},s_{(0)},d_{(1)}/(s_{(0)}d_{(0)}),s_{(1)},\dots)$, a bijection onto
+$\rng M$~\cite[Prop.~2.7]{shah2024}. (ii)$\Rightarrow$(i) is trivial, and (i)$\Rightarrow$(ii)
+holds because $J$ is the image of a layout by \cref{thm:long}.
+(ii)$\Rightarrow$(iii): let $E=(A,C')$ be a bijection onto $\rng M$ and let
+$(r_{(0)},t_{(0)}),(r_{(1)},t_{(1)}),\dots$ be its non-unit modes sorted by stride. We claim
+$r_{(j)}=\Pi_j:=t_{(0)}\cdots t_{(j-1)}$. Inductively, the coordinates supported on the modes
+$(0),\dots,(j-1)$ take exactly the values in $\rng{\Pi_j}$. The unit of mode $(j)$ is a different
+coordinate, so by injectivity $r_{(j)}\ge\Pi_j$; and the value $\Pi_j$ is attained by a coordinate
+with a non-zero entry in some mode $(j')$, $j'\ge j$, so $\Pi_j\ge r_{(j')}\ge r_{(j)}$. Thus the
+sorted layout is column-major, and the modes of $A$ occur in it in the order of their strides, so
+$s_{(i)}d_{(i)}$, a prefix product, divides the later prefix product $d_{(i+1)}$, and
+$s_{(k)}d_{(k)}$ divides $M$. (This direction is \cite[Prop.~2.1.6.32]{carlisle2026}.)
+Finally, $J$ is unique by \cref{prop:unique-complement}, an increasing function is determined by
+its image, and a coalesced layout by its function (\cref{cor:coalesce}); $\bnd C$ is increasing
+because each stride of $C$ exceeds the largest value reachable with the earlier modes.
+\end{proof}
+
+The equivalence of (ii) and (iii) and the uniqueness of the sorted coalesced complement are due
+to Shah~\cite{shah2024} and Carlisle et al.~\cite{carlisle2026}. What \cref{thm:long} adds is
+that condition (iii) is not a restriction imposed by the layout formalism: \emph{no set
+whatsoever} completes $I$ to an interval unless (iii) holds. Uniqueness of the set $J$ gives an
+involution for free (again noted for sets in~\cite{bodini2006}):
+
+\begin{corollary}[double complement]\label{cor:double}
+If $A$ has a complement $C$ in $\rng M$, then the complement of $C$ in $\rng M$ is the
+coalesced, increasing layout with the same image as $A$ (``sort the modes of $A$ by stride and
+coalesce'').
+\end{corollary}
+\begin{proof}
+Both have image the unique $I'$ with $I'\oplus J=\rng M$, namely $I$, and increasing functions.
+\end{proof}
+
+\begin{remark}[beyond the tiling regime]\label{rem:nontiling}
+CuTe's \code{complement} is defined more generally. If only the last clause of (iii) fails and
+the cotarget is an integer $M$, the implementations round $M$ up to the next multiple $M'$ of
+$s_{(k)}d_{(k)}$ and return the complement in $\rng{M'}$; this is how tiles that overhang the end of a tensor arise. If the
+chain condition itself fails but $s_{(i)}d_{(i)}\le d_{(i+1)}$ still holds, they replace the
+quotients in~\eqref{eq:complement} by their integer parts. The result $C$ then has an increasing
+function and $(A,C)$ is injective, but it is not onto any interval, and by \cref{thm:complement}
+no set could make it so. The stated post-conditions (disjoint, ordered) do not determine $C$ in
+this regime---for $A=(2,2):(1,3)$ and $M=24$ both $4:6$, which is returned, and $4:5$ satisfy
+them---and we do not study it.
+\end{remark}
+
+\subsection{Compact layouts and division}
+
+A layout $E$ is \emph{compact} if $\bnd E$ is a bijection onto $\rng{|E|}$. The proof of
+\cref{thm:complement} showed (cf.~\cite[Prop.~2.1.5.6]{carlisle2026}, \cite[\S3]{shah2024}):
+
+\begin{lemma}[compact layouts are digit permutations]\label{lem:compact}
+A flat layout $E=\lay TR$ is compact if and only if its non-unit modes, sorted by stride, form a
+column-major layout $U$. Then $\bnd E$ sends the digit $c_j$ of mode $j$ of $T$ to the digit of
+$U$ at the position that mode $j$ takes in the sorted order.
+\end{lemma}
+\noindent We call $U$ the \emph{sorted shape} of $E$. Thread-value layouts of tensor-core
+instructions and the layouts $(B,\compl(B,M))$ that implement tiling are compact.
+
+\begin{theorem}[composition with a compact layout]\label{thm:division}
+Let $E$ be a compact layout of size $M$ with sorted shape $U$, and let $A$ be a layout with values
+in any abelian group $\D$. Then $A\circ E$ exists if and only if
+\[ \spec(\ext A|_{\rng M})\ \cup\ \Sc(U)\ \cup\ \{M\}\quad\text{is a chain under divisibility,} \]
+that is, if and only if $\ext A|_{\rng M}$ is a layout function whose spectral scales are
+comparable with the scales of $U$. If $|A|=M$ the first requirement holds automatically.
+\end{theorem}
+\begin{proof}
+Let $T'$ be a by-mode refinement of the shape $T$ of $E$, and $E'$ the corresponding refinement of
+$E$. $E'$ is compact; its sorted shape $U'$ refines $U$, and conversely every refinement of $U$
+arises this way (subdivide a mode of $T$ exactly as the corresponding digit of $U$). By
+\cref{lem:compact}, $\bnd E=\bnd{E'}$ carries the digits of $T'$ to those of $U'$, hence
+carry-free pairs for $T'$ to carry-free pairs for $U'$, and vice versa. So $\ext A\circ\bnd E$ is
+$T'$-additive iff $\ext A|_{\rng M}$ is $U'$-additive, iff
+$\spec(\ext A|_{\rng M})\subseteq\Sc(U')$ (\cref{thm:spectrum}). The sets $\Sc(U')$, for $U'$
+refining $U$, are the chains of divisors of $M$ in $\{2,\dots,M-1\}$ that contain $\Sc(U)$; one
+of them contains the spectrum iff the displayed set is a chain. The last sentence is
+\cref{thm:spectrum}(a).
+\end{proof}
+
+\begin{corollary}[logical divide]\label{cor:divide}
+Let $A$ be any layout and let $B$ have a complement in $\rng{|A|}$. Then
+$A\oslash B=A\circ(B,\compl(B,|A|))$ exists if and only if every spectral scale of $\bnd A$ is
+comparable under divisibility with each of the numbers $d_{(i)}$ and $s_{(i)}d_{(i)}$ attached to
+$B$ in \cref{thm:complement}.
+\end{corollary}
+\begin{proof}
+The prefix products of the sorted shape of $(B,\compl(B,|A|))$ are
+$1$, $d_{(0)}$, $s_{(0)}d_{(0)}$, $d_{(1)}$, \dots, $s_{(k)}d_{(k)}$, $|A|$.
+\end{proof}
+
+\begin{example}
+Tile $A=(8,8):(1,9)$, a padded $8\times8$ matrix with the single spectral scale $8$, by $B=4:1$:
+here $\compl(B,64)=16:4$ and the tiling has the scale $4$, which divides $8$. So
+$A\oslash B$ exists; it is $(4,(2,8)):(1,(4,9))$. For $A=(6,8):(1,7)$ and the same $B$ the scales
+$4$ and $6$ are incomparable: $A\oslash B$ does not exist, for any choice of strides with a
+non-zero jump at $6$.
+\end{example}
+
+\begin{remark}[tilers that do not divide the size]\label{rem:roundup}
+When $s_{(k)}d_{(k)}\nmid|A|$, $B$ has no complement in $\rng{|A|}$ and \cref{cor:divide} does not
+apply. If one divides by the complement of $B$ in the longer interval $\rng{M'}$ of
+\cref{rem:nontiling} instead, $A$ is evaluated beyond its domain and \cref{thm:division} applies
+with $M'$ in place of $M$; its requirement that the spectral scales divide $M'$ is then a real
+one. For $A=(2,2):(0,1)$ and $B=5:1$ one has $M'=5$ and a tiling without proper scales, but
+$\ext A(x)=\floor{x/2}$ is not a layout function on $\rng5$, and the composite does not exist.
+The implementations pass a shape rather than an integer as the cotarget in \code{logical\_divide}
+and need not follow this recipe: in PyCuTe, dividing $(2,2):(1,2)$ by $3:1$ returns
+$(3,1):(1,3)$, a layout of size $3$.
+\end{remark}
+
+\Cref{thm:division} is exact and makes no assumption on $A$. When $A$ is itself a digit map it
+specialises to the ``mutual refinement'' criterion of Carlisle et al.~\cite[\S4.1]{carlisle2026},
+who also sketch, without proof, the extension to a general outer layout using rational
+entries~\cite[\S4.1.5]{carlisle2026}; for a compact inner layout the theorem makes that precise
+and supplies the converse.
+
+It also shows how compact layouts compose, and why care is needed. A compact layout $E$ comes
+with two chains: the spectrum of $\bnd E$, on the side of its domain, and $\Sc(U)$, on the side
+of its codomain. By \cref{thm:division}, for compact layouts $E_1,E_2$ of the same size,
+$E_1\circ E_2$ exists if and only if the domain chain of $E_1$ is compatible with the codomain
+chain of $E_2$. It is not enough that the two sorted shapes
+have a common refinement: $E=(2,3):(3,1)$ has sorted shape $(3,2)$, but $E\circ E$ would be the
+permutation $(0,4,3,2,1,5)$, which is not a layout function. So the permutations of $\rng M$
+expressible as layouts do not form a group; as observed in~\cite[\S3]{shah2024} they are the image
+of a groupoid whose objects are the ordered factorisations of $M$, a compact layout being a
+morphism from its domain chain to its codomain chain.
+
+\subsection{Product and inverses}
+
+For completeness we record how the remaining operations fit in.
+
+\begin{proposition}\label{prop:product}
+\begin{enumerate}[label=(\alph*),itemsep=1pt]
+\item Let $A$ be injective with at least one non-unit mode, let it satisfy condition (iii) of
+ \cref{thm:complement} without the last clause, and let $A^*$ be the layout~\eqref{eq:complement}
+ with last mode $\lay1{s_{(k)}d_{(k)}}$. Then $(a,b)\mapsto a+b$ is a bijection from
+ $I\times\ext{A^*}(\N)$ onto $\N$, all jumps of $A^*$ are positive, and the logical product
+ $A\otimes B=(A,A^*\circ B)$ exists if and only if some by-mode refinement of $B$ is carry-free at
+ the scales of $A^*$. It is injective iff $B$ is.
+\item If $E$ is compact with sorted shape $U$, then $\bnd E^{-1}$ is the function of the compact
+ layout with shape $U$ whose strides are the prefix products of the shape of $E$, taken in sorted
+ order. More generally, if some of the modes of a layout $A$, sorted by stride, form a
+ column-major layout of size $K$, then the inverse of that sublayout, read as a map into the
+ domain of $A$, is a right inverse of $A$ on $\rng K$. If $A$ has a complement in $\rng M$, the
+ inverse of $(A,\compl(A,M))$ is a left inverse of $A$, i.e.\ it sends $\bnd A(x)$ to $x$.
+\end{enumerate}
+\end{proposition}
+\begin{proof}
+(a) The bijection follows from \cref{thm:complement} applied to all multiples $M$ of
+$s_{(k)}d_{(k)}$. The jumps of $A^*$ are $(s_{(i)}-1)\,d_{(i)}>0$, hence independent, and
+\cref{thm:carryfree} applies. (b) By \cref{lem:compact}, $\bnd E$ permutes mixed-radix digits; the
+inverse permutation has the stated strides. The other two statements follow by restricting to
+the coordinates of the chosen modes, respectively of $A$.
+\end{proof}
+
+\noindent CuTe's \code{right\_inverse} selects such a set of modes greedily in order of
+increasing stride; the result is a right inverse but not always the largest one (for
+$A=(2,3):(1,1)$ the greedy choice has size $2$, while $3:2$ is a right inverse of size $3$).
+Its \code{left\_inverse} may differ from the inverse of $(A,\compl(A,M))$ outside the image of
+$A$, where a left inverse is unconstrained.

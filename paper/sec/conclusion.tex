@@ -1,0 +1,60 @@
+\section{Conclusion}\label{sec:conclusion}
+
+A CuTe layout is a map that is additive wherever mixed-radix addition does not carry, and the
+layout algebra is the calculus of what happens when it does. Seen this way, coalescing deletes
+jumps that are zero, composition evaluates one layout at the strides of another and succeeds when
+the carries are invisible, CuTe's divisibility conditions single out strides with one digit that
+divides its mode, and complements are the classical direct-sum decompositions of an interval. Swizzles fit
+the same picture with a second radix: they are layouts for XOR, and XOR differs from integer
+addition by the carries of the binary expansion.
+
+\paragraph{In practice.}
+For a reader who wants checks rather than theorems, the results amount to four rules.
+\begin{enumerate}[leftmargin=1.6em,itemsep=2pt]
+\item \emph{Reading a layout.} $\lay SD$ is the function $x\,d_0+\sum_i\floor{x/P_i}\,\jump_i$ with
+ $\jump_i=d_i-s_{i-1}d_{i-1}$. On its domain it is determined by its slope and by the total jumps
+ at the scales $2\le P<|S|$, and only the non-zero ones matter
+ (\cref{prop:floorsum,cor:coalesce}).
+\item \emph{Composition.} $A\circ B$ can only be a by-mode refinement $B'$ of $B$, with modes
+ $(t'_l,r'_l)$, carrying the strides $\ext A(r'_l)$ at its non-unit modes (\cref{lem:forced};
+ \cref{ex:docs} shows the difference between $B$ and $B'$). It is correct if
+ $\sum_l(t'_l-1)\,(r'_l\bmod P)<P$ for every scale $P$ of $A$ with a non-zero jump, and this is
+ also necessary when the jumps of $A$ are independent, for instance when all non-zero jumps have
+ the same sign, as for row-major, column-major and padded matrices (\cref{thm:carryfree}).
+ Testing each mode of $B$ on its own, as the implementations do, is not enough when two modes
+ land in the same digit of $A$ (\cref{ex:shah}).
+\item \emph{Complement and division.} An injective layout with non-negative strides has a
+ complement in $\rng M$ exactly when its non-unit modes, sorted by stride, satisfy
+ $s_{(i)}d_{(i)}\mid d_{(i+1)}$ and $s_{(k)}d_{(k)}\mid M$, and no other kind of set can tile
+ either (\cref{thm:complement}); a layout can be divided by a tiling of its index range exactly
+ when its scales with non-zero jump are comparable with the scales of the tiling
+ (\cref{cor:divide}).
+\item \emph{Swizzles.} If the layout under a swizzle is bit-disjoint---power-of-two mode sizes on
+ disjoint bit ranges---and the swizzled layout starts from offset $0$, then the offset bookkeeping
+ CuTe uses when slicing it is valid, and a slice is an ordinary layout exactly when no XOR-ed pair
+ of bits is split between two of the binary digits that still vary
+ (\cref{thm:decay,prop:fields}).
+\end{enumerate}
+
+Several questions remain. The carry-free criterion is exact for outer layouts with independent
+jumps; for the remaining ones (mixed-sign jumps, torsion codomains) the defect condition of
+\cref{thm:exact} is exact but we have no closed form; likewise \cref{thm:decay} is a closed form
+for bit-disjoint layouts only. The complement outside the tiling regime,
+layouts with symbolic (run-time) extents, and the higher-level operations built on top of
+division and product (blocked and raked products, tensor slicing) are not treated here. Finally,
+the differential tests suggest concrete changes to implementations. Checking the carry-free
+inequality before distributing over the modes of the inner layout would turn the interference
+errors into rejections; the single-mode errors of the C++ implementation call for a static stride
+test that requires divisibility, as documented; and carry-free compositions with sum strides
+could optionally be accepted. For swizzled layouts the corresponding checks are bit-disjointness
+of the inner layout when slicing, and the pairwise correspondence of bits of
+\cref{prop:transport} when a swizzle is pushed through a layout.
+
+\paragraph{Acknowledgments.}
+This work was carried out with substantial assistance from an AI system (Claude, developed by
+Anthropic), which, under the author's direction, surveyed the literature, proposed and developed
+the framework, wrote the proofs, the Lean formalisation and the test programs, and drafted the
+manuscript. Drafts were independently reviewed by a second AI system (Codex, developed by
+OpenAI), which found a number of errors that have been corrected and contributed \cref{ex:three},
+\cref{ex:assoc} and several of the counterexamples of \cref{sec:swizzle,sec:testing}. The author
+takes responsibility for the content. The AI systems are not authors.

@@ -1,0 +1,127 @@
+\section{The carry calculus}\label{sec:carry}
+
+\subsection{Slope and jumps}
+
+A stride records the value of the layout at a unit of the mixed-radix system:
+$d_i=\ext{L}(P_i)$ for every mode that is not a unit mode. (The digit of a unit mode other than the
+last is always $0$, so its stride is never used; we come back to this convention in
+\cref{sec:normalform}.) A linear function $x\mapsto x\cdot a$ would have $d_i=P_i\cdot a$, that is,
+$d_i=s_{i-1}\cdot d_{i-1}$. The deviation from this is the fundamental invariant.
+
+\begin{definition}[slope, jumps]\label{def:jumps}
+Let $L=\lay{(s_0,\dots,s_{m-1})}{(d_0,\dots,d_{m-1})}$. The \emph{slope} of $L$ is $d_0$, and for
+$1\le i\le m-1$ the \emph{jump} of $L$ at scale $P_i$ is
+\[ \jump_i = d_i - s_{i-1}\cdot d_{i-1}\ \in\D . \]
+\end{definition}
+\noindent The map $(d_0,\dots,d_{m-1})\mapsto(d_0;\jump_1,\dots,\jump_{m-1})$ is a bijection of
+$\D^m$ (invert it by $d_i=\jump_i+s_{i-1}d_{i-1}$), so for a fixed shape, slope and jumps are just
+another coordinate system for the strides.
+
+\begin{proposition}[floor-sum form\mech]\label{prop:floorsum}
+For every layout $L$ and every $x\in\N$,
+\begin{equation}\label{eq:floorsum}
+ \ext{L}(x)=x\cdot d_0+\sum_{i=1}^{m-1}\floor{\frac{x}{P_i}}\cdot\jump_i .
+\end{equation}
+\end{proposition}
+\begin{proof}
+Because $\floor{x/P_{i+1}}=\floor{\floor{x/P_i}/s_i}$, the digits are
+$\dg_i(x)=\floor{x/P_i}-s_i\floor{x/P_{i+1}}$ for $i\le m-2$ and $\dg_{m-1}(x)=\floor{x/P_{m-1}}$.
+Hence
+\[ \ext{L}(x)=\sum_{i=0}^{m-1}\floor{\frac{x}{P_i}}\cdot d_i-\sum_{i=0}^{m-2}\floor{\frac{x}{P_{i+1}}}\cdot s_id_i
+ =x\cdot d_0+\sum_{i=1}^{m-1}\floor{\frac{x}{P_i}}\cdot(d_i-s_{i-1}d_{i-1}). \qedhere \]
+\end{proof}
+
+\begin{example}\label{ex:jumps}
+\Cref{tab:jumps} lists the layouts of \cref{ex:running}. Column-major has no jump: it is the
+identity function. Row-major $(4,8):(8,1)$ advances by $8$ per step and falls back by $31$
+whenever a row is completed. For the last layout,
+$\bnd{L}(22)=22+6\cdot 11-14\cdot 5+8\cdot 1=26$, as in \cref{ex:running}.
+\end{example}
+
+\begin{table}[t]\centering
+\begin{tabular}{@{}lll@{}}
+\toprule
+layout & jumps (scale: value) & floor-sum form of $\ext{L}(x)$\\
+\midrule
+$(4,8):(1,4)$ & $4\colon 0$ & $x$\\
+$(4,8):(8,1)$ & $4\colon -31$ & $8x-31\floor{x/4}$\\
+$(4,8):(1,5)$ & $4\colon 1$ & $x+\floor{x/4}$\\
+$(2,2,4,2):(1,8,2,16)$ & $2\colon 6,\ \ 4\colon -14,\ \ 16\colon 8$ & $x+6\floor{x/2}-14\floor{x/4}+8\floor{x/16}$\\
+\bottomrule
+\end{tabular}
+\caption{Slope--jump coordinates of some layouts.}\label{tab:jumps}
+\end{table}
+
+Formula~\eqref{eq:floorsum} has an ``odometer'' reading. Since
+$\floor{x/P}-\floor{(x-1)/P}$ is $1$ if $P\mid x$ and $0$ otherwise,
+\begin{equation}\label{eq:odometer}
+ \ext{L}(x)-\ext{L}(x-1)=d_0+\sum_{i\,:\,P_i\mid x}\jump_i\qquad(x\ge1):
+\end{equation}
+each step adds the slope, plus the jump of every scale that rolls over at that step.
+
+\subsection{The carry identity}
+
+When two numbers are added in radix $S$, a carry may be passed into digit $i$; this happens
+exactly when $(x\bmod P_i)+(y\bmod P_i)\ge P_i$. More generally, for $x_1,\dots,x_n\in\N$
+($n\ge1$) and a scale $P\ge1$ define the \emph{carry count}
+\begin{equation}\label{eq:carrycount}
+ \Cdef_P(x_1,\dots,x_n)=\floor{\frac{\sum_kx_k}{P}}-\sum_{k=1}^n\floor{\frac{x_k}{P}}
+ =\floor{\frac{\sum_k(x_k\bmod P)}{P}}\in\{0,\dots,n-1\},
+\end{equation}
+the total carry passed across scale $P$ when the $x_k$ are added up.
+
+\begin{theorem}[carry identity\mech]\label{thm:carry}
+For every layout $L$ and all $x_1,\dots,x_n\in\N$,
+\begin{equation}\label{eq:carry}
+ \ext{L}(x_1+\dots+x_n)-\sum_{k=1}^n\ext{L}(x_k)=\sum_{i=1}^{m-1}\Cdef_{P_i}(x_1,\dots,x_n)\cdot\jump_i .
+\end{equation}
+In particular $\ext{L}(x+y)=\ext{L}(x)+\ext{L}(y)+\sum_i c_i(x,y)\cdot\jump_i$, where
+$c_i(x,y)\in\{0,1\}$ is the carry into digit $i$.
+\end{theorem}
+\begin{proof}
+Insert~\eqref{eq:floorsum}; the linear terms cancel and the floor terms give the first expression
+in~\eqref{eq:carrycount}. Writing $x_k=P\floor{x_k/P}+(x_k\bmod P)$ gives the second, and the bound
+holds because each residue is less than $P$.
+\end{proof}
+
+A layout function is thus additive \emph{up to carries, and each carry is charged its jump}. All
+later results are bookkeeping of the right-hand side of~\eqref{eq:carry}. The identity also
+characterises layouts.
+
+\begin{definition}\label{def:additive}
+Let $S$ be a shape with $|S|=N$. A pair $x,y\in\rng N$ is \emph{carry-free} (for $S$) if
+$\dg_i(x)+\dg_i(y)<s_i$ for all $i$. A function $g\colon\rng N\to\D$ is \emph{$S$-additive} if
+$g(x+y)=g(x)+g(y)$ for every carry-free pair.
+\end{definition}
+
+\begin{proposition}[layouts are the carry-free additive maps\mech]\label{prop:additive}
+A function $g\colon\rng{|S|}\to\D$ is $S$-additive if and only if $g=\bnd{\lay SD}$ for some
+$D\in\D^m$. The strides of the non-unit modes are then forced: $d_i=g(P_i)$.
+\end{proposition}
+\begin{proof}
+If $x,y$ is carry-free then $x+y<|S|$ and, by uniqueness of the mixed-radix representation,
+$\dg_i(x+y)=\dg_i(x)+\dg_i(y)$; so layout functions are $S$-additive. Conversely let $g$ be
+$S$-additive. The pair $(0,0)$ gives $g(0)=0$. Put $d_i=g(P_i)$ if $s_i>1$ and $d_i=0$ otherwise.
+If $x\neq0$ choose $i$ with $\dg_i(x)\ge1$; then $s_i>1$, $P_i\le x$, and $(P_i,\,x-P_i)$ is
+carry-free, so $g(x)=d_i+g(x-P_i)$. Induction on the digit sum of $x$ yields
+$g(x)=\sum_i\dg_i(x)\cdot d_i$.
+\end{proof}
+
+\begin{remark}[what kind of map a layout is]\label{rem:twogroups}
+Carry-free addition makes the box $\rng{s_0}\times\dots\times\rng{s_{m-1}}\cong\rng{|S|}$ a
+partial commutative monoid, and \cref{prop:additive} says that layouts are exactly its
+homomorphisms. The box also carries two honest group laws: addition modulo $|S|$, which propagates
+carries, and digit-wise addition modulo $s_i$, which does not. On carry-free pairs both coincide
+with ordinary addition, so a homomorphism for either law is a layout. For the first law these are
+the linear layouts $x\mapsto x\cdot a$ with $|S|\cdot a=0$; for the second they are the layouts
+with $s_i\cdot d_i=0$ for every non-unit mode, which occur for $\D=\F_2^k$ and binary shapes, the
+setting of Triton's linear layouts (\cref{sec:beyond}). A general layout is a homomorphism for
+neither; on $\N$, $\ext L$ is additive exactly when the total jump at every scale $P\ge2$
+vanishes (a jump at scale $1$, which a leading unit mode can carry, only changes the slope).
+
+In the language of group cohomology: let the last digit range over $\Z$, so that digit expansion
+is defined on $\Z$. It is then a set-theoretic section of the surjection $\Z^m\to\Z$,
+$e_i\mapsto P_i$, whose kernel $K$ has basis $e_i-s_{i-1}e_{i-1}$ ($1\le i<m$). The carries are the
+factor set of this section~\cite{isaksen2002}, the strides define a homomorphism $\Z^m\to\D$, and
+the jumps are its values on that basis of $K$.
+\end{remark}

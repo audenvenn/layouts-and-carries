@@ -1,0 +1,60 @@
+{
+ "counts": {
+  "correct": 1846,
+  "correctly_rejected": 623,
+  "correctly_rejected/[Shape Divisibility Condition]": 179,
+  "correctly_rejected/[Stride Divisibility Condition]": 444,
+  "rejected_but_composable": 378,
+  "rejected_but_composable/non_dividing": 9,
+  "rejected_but_composable/sum_stride": 340,
+  "rejected_but_composable/zero_stride": 29,
+  "silent_wrong": 153,
+  "silent_wrong/a_layout_exists": 11,
+  "silent_wrong/interference_between_modes": 53,
+  "silent_wrong/multi_mode_with_a_wrong_single_mode": 71,
+  "silent_wrong/no_layout_exists": 142,
+  "silent_wrong/single_mode/stride_digit_does_not_divide_mode_size": 29
+ },
+ "examples": {
+  "rejected_but_composable/non_dividing": [
+   "(3,1):(3,5) o (3,1,1):(1,2,4) = (3:3 , 1:0 , 1:0)  [Stride Divisibility Condition]",
+   "(3,4):(2,2) o (2,1):(2,5) = (2:4 , 1:0)  [Stride Divisibility Condition]",
+   "(4,2,1):(5,1,0) o (1,2,2):(3,6,1) = (1:0 , 2:11 , 2:5)  [Stride Divisibility Condition]",
+   "(3,5,1):(12,2,6) o (3,1):(6,4) = (3:4 , 1:0)  [Stride Divisibility Condition]"
+  ],
+  "rejected_but_composable/sum_stride": [
+   "(2,1):(1,6) o 1:3 = (1:0)  [Stride Divisibility Condition]",
+   "(2,1):(3,12) o 2:3 = (2:15)  [Stride Divisibility Condition]",
+   "(2,1):(24,8) o 4:5 = ((2,2):(40,40))  [Stride Divisibility Condition]",
+   "(2,2):(24,7) o 2:9 = (2:52)  [Stride Divisibility Condition]"
+  ],
+  "rejected_but_composable/zero_stride": [
+   "(5,1):(9,9) o (2,2):(0,12) = (2:0 , 2:36)  [Stride Divisibility Condition]",
+   "(1,8,4):(3,8,0) o (1,1):(0,12) = (1:0 , 1:0)  [Stride Divisibility Condition]",
+   "(8,1):(12,7) o (1,6):(0,9) = (1:0 , 6:19)  [Stride Divisibility Condition]",
+   "(5,2):(8,24) o (2,1,2):(0,1,9) = (2:0 , 1:0 , 2:56)  [Stride Divisibility Condition]"
+  ],
+  "silent_wrong/interference_between_modes": [
+   "(4,2):(16,12) o (2,2):(3,3) -> (_2,_2):(_48,_48)=[0, 48, 48, 96]; A(B(i))=[0, 48, 48, 44]",
+   "(3,2):(8,7) o (2,3):(1,1) -> (_2,_3):(_8,_8)=[0, 8, 8, 16, 16, 24]; A(B(i))=[0, 8, 8, 16, 16, 7]",
+   "(2,2,1):(2,8,3) o (2,4):(1,1) -> (_2,(_2,_2)):(_2,(_2,_8))=[0, 2, 2, 4, 8, 10, 10, 12]; A(B(i))=[0, 2, 2, 8, 8, 10, 10, 3]",
+   "(6,3):(16,5) o (2,2):(4,3) -> (_2,_2):(_64,_48)=[0, 64, 48, 112]; A(B(i))=[0, 64, 48, 21]"
+  ],
+  "silent_wrong/multi_mode_with_a_wrong_single_mode": [
+   "(5,1):(2,16) o (2,4):(3,3) -> (_2,(_2,_2)):(_6,(_6,_16))=[0, 6, 6, 12, 16, 22, 22, 28]; A(B(i))=[0, 6, 6, 18, 18, 24, 24, 36]",
+   "(1,3,2):(0,9,7) o (2,4):(12,2) -> (_2,(_2,_2)):(_28,(_18,_7))=[0, 28, 18, 46, 7, 35, 25, 53]; A(B(i))=[0, 28, 18, 46, 16, 44, 14, 42]",
+   "(6,3,1):(16,24,9) o (1,4):(2,4) -> (_1,(_2,_2)):(_9,(_64,_24))=[0, 64, 24, 88]; A(B(i))=[0, 64, 56, 48]",
+   "(8,2):(9,4) o (6,1):(6,5) -> ((_2,_3),_1):((_54,_4),_4)=[0, 54, 4, 58, 8, 62]; A(B(i))=[0, 54, 40, 26, 12, 66]"
+  ],
+  "silent_wrong/single_mode/stride_digit_does_not_divide_mode_size": [
+   "(5,1):(7,6) o 4:4 -> (_2,_2):(_28,_6)=[0, 28, 6, 34]; A(B(i))=[0, 28, 27, 26]",
+   "(3,2):(12,0) o 6:2 -> (_2,_3):(_24,_0)=[0, 24, 0, 24, 0, 24]; A(B(i))=[0, 24, 12, 0, 24, 12]",
+   "(5,2):(1,8) o 4:4 -> (_2,_2):(_4,_8)=[0, 4, 8, 12]; A(B(i))=[0, 4, 11, 18]",
+   "(8,2):(1,0) o 4:5 -> (_2,_2):(_5,_0)=[0, 5, 0, 5]; A(B(i))=[0, 5, 2, 7]"
+  ]
+ },
+ "implementation": "cute-c++ (static integers)",
+ "seed": 0,
+ "n": 3000,
+ "suite": "random"
+}

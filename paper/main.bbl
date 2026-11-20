@@ -1,0 +1,111 @@
+\begin{thebibliography}{10}
+
+\bibitem{bhaskaracharya2025}
+Somashekaracharya~G. Bhaskaracharya, Aravind Acharya, Bastian Hagedorn, and
+  Vinod Grover.
+\newblock Modeling layout abstractions using integer set relations, 2025.
+\newblock arXiv:2511.10374.
+
+\bibitem{bodini2006}
+Olivier Bodini and Eric Rivals.
+\newblock Tiling an interval of the discrete line.
+\newblock In {\em Combinatorial Pattern Matching ({CPM} 2006)}, volume 4009 of
+  {\em Lecture Notes in Computer Science}, pages 117--128. Springer, 2006.
+
+\bibitem{carlisle2026}
+Jack Carlisle, Jay Shah, Reuben Stern, and Paul VanKoughnett.
+\newblock Categorical foundations for {CuTe} layouts, 2026.
+\newblock arXiv:2601.05972.
+
+\bibitem{cecka2026}
+Cris Cecka.
+\newblock {CuTe} layout representation and algebra, 2026.
+\newblock arXiv:2603.02298.
+
+\bibitem{debruijn1956}
+N.~G. de~Bruijn.
+\newblock On number systems.
+\newblock {\em Nieuw Archief voor Wiskunde (3)}, 4:15--17, 1956.
+
+\bibitem{moura2021}
+Leonardo de~Moura and Sebastian Ullrich.
+\newblock The {Lean} 4 theorem prover and programming language.
+\newblock In {\em Automated Deduction -- {CADE} 28}, volume 12699 of {\em
+  Lecture Notes in Computer Science}, pages 625--635. Springer, 2021.
+
+\bibitem{hagedorn2023}
+Bastian Hagedorn, Bin Fan, Hanfeng Chen, Cris Cecka, Michael Garland, and Vinod
+  Grover.
+\newblock Graphene: An {IR} for optimized tensor computations on {GPUs}.
+\newblock In {\em Proceedings of the 28th ACM International Conference on
+  Architectural Support for Programming Languages and Operating Systems
+  ({ASPLOS} '23), Volume 3}, pages 302--313, 2023.
+
+\bibitem{hou2026}
+Bohan Hou, Hongyi Jin, Guanjie Wang, et~al.
+\newblock Axe: A simple unified layout abstraction for machine learning
+  compilers, 2026.
+\newblock arXiv:2601.19092.
+
+\bibitem{isaksen2002}
+Daniel~C. Isaksen.
+\newblock A cohomological viewpoint on elementary school arithmetic.
+\newblock {\em The American Mathematical Monthly}, 109(9):796--805, 2002.
+
+\bibitem{liu2026}
+Amanda Liu.
+\newblock {\em A Verified Approach to High-Performance Tensor-Program
+  Optimization}.
+\newblock PhD thesis, Massachusetts Institute of Technology, 2026.
+\newblock \url{https://adam.chlipala.net/theses/lamanda.pdf}.
+
+\bibitem{long1967}
+Calvin~T. Long.
+\newblock Addition theorems for sets of integers.
+\newblock {\em Pacific Journal of Mathematics}, 23(1):107--112, 1967.
+
+\bibitem{cutedocs}
+{NVIDIA}.
+\newblock {CuTe} layouts and layout algebra: {CUTLASS} documentation and
+  source.
+\newblock \url{https://github.com/NVIDIA/cutlass}, files
+  \texttt{media/docs/cpp/cute/01\_layout.md}, \texttt{02\_layout\_algebra.md},
+  \texttt{include/cute/layout.hpp}, \texttt{python/pycute/}, 2026.
+\newblock Commit \texttt{af95104}, accessed 20 November 2026.
+
+\bibitem{pycute}
+{NVIDIA}.
+\newblock {PyCuTe}: a pure-{Python} reference implementation of {CuTe}.
+\newblock \url{https://github.com/NVlabs/CuTe}, 2026.
+\newblock Commit \texttt{56cc3d0}, accessed 20 November 2026.
+
+\bibitem{shah2024}
+Jay Shah.
+\newblock A note on the algebra of {CuTe} layouts.
+\newblock Colfax Research technical note,
+  \url{https://research.colfax-intl.com/a-note-on-the-algebra-of-cute-layouts/},
+  January 2024.
+
+\bibitem{tavakkoli2025}
+Amir~Mohammad Tavakkoli, Cosmin Oancea, and Mary Hall.
+\newblock {LEGO}: Layout expression for generating one-to-one mapping, 2025.
+\newblock arXiv:2505.08091.
+
+\bibitem{mathlib2020}
+{The mathlib Community}.
+\newblock The {Lean} mathematical library.
+\newblock In {\em Proceedings of the 9th ACM SIGPLAN International Conference
+  on Certified Programs and Proofs ({CPP} 2020)}, pages 367--381, 2020.
+
+\bibitem{zhou2026}
+Keren Zhou, Mario Lezcano-Casado, Adam~P. Goucher, Akhmed Rakhmati, Jeff Niu,
+  Justin Lebar, Pawel Szczerbuk, Peter Bell, Phil Tillet, Thomas Raoux, and
+  Zahi Moudallal.
+\newblock Linear layouts: Robust code generation of efficient tensor
+  computation using $\mathbb{F}_2$.
+\newblock In {\em Proceedings of the 31st ACM International Conference on
+  Architectural Support for Programming Languages and Operating Systems
+  ({ASPLOS} '26)}, 2026.
+\newblock arXiv:2505.23819.
+
+\end{thebibliography}

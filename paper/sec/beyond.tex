@@ -1,0 +1,75 @@
+\section{Other codomains, and the categorical picture}\label{sec:beyond}
+
+\subsection{Negative strides, coordinates, XOR}
+
+Nothing in \cref{sec:carry,sec:normalform,sec:composition} used more about the codomain $\D$ of
+the outer layout than that it is an abelian group. Three instances matter in practice.
+
+\emph{$\D=\Z$ with negative strides} (reversed modes). The inner layout $B$ of a composition
+must still be $\N$-valued, since it produces arguments of $\ext A$.
+
+\emph{$\D=\Z^k$: coordinate layouts.} Cecka~\cite{cecka2026} uses strides that are multiples of
+basis vectors $e_i$ to make layouts return coordinates rather than offsets; e.g.\
+$(4,8):(e_0,e_1)$ is the identity on $2$-D coordinates. The digit layout $E_S$ of
+\cref{sec:composition} is of this kind, and \cref{cor:universal} says that it is the universal
+outer layout: $A\circ B$ exists for all strides on $S$ exactly when $E_S\circ B$ does.
+
+\emph{$\D=\F_2^k$: XOR.} Let $S=(2,\dots,2)$ have $m$ binary modes. A layout
+$\lay SD$ with $D\in(\F_2^k)^m$ sends $x$ to the XOR of the strides $d_i$ over the set bits $i$ of
+$x$: it is an arbitrary $\F_2$-linear map $\F_2^m\to\F_2^k$ precomposed with the binary expansion.
+These are precisely the \emph{linear layouts} of Triton~\cite{zhou2026}, and they include the
+swizzle patterns used to avoid shared-memory bank conflicts.\footnote{PyCuTe's \code{F2} strides
+multiply carry-lessly, which amounts to reading a mode of size $2^p$ as $p$ binary modes; with
+that reading its XOR-strided layouts are of this form. Beyond its last mode PyCuTe continues
+carry-lessly, with further binary modes of strides $2^pd,2^{p+1}d,\dots$, whereas
+\cref{def:layout} would let the coordinate of the last mode grow.} Since $2d=0$ in $\F_2^k$, the jumps of
+such a layout are its strides, $\jump_i=d_i$, and the carry identity reads
+\[ \ext L(x+y)=\ext L(x)\oplus\ext L(y)\oplus\bigoplus_{i\ge1}c_i(x,y)\,d_i , \]
+which for the identity layout, and $x+y<2^m$, is the textbook equation of the binary adder.
+\Cref{thm:defect} applies unchanged: such a layout $A$ composes with an $\N$-valued $B$ as
+long as the carries of $B$ in binary are invisible to $A$, e.g.\ when the modes of $B$ occupy
+disjoint bit ranges, as the modes of a compact layout with power-of-two mode sizes do
+(thread-value layouts of tensor-core instructions are of this kind). \Cref{sec:swizzle} works
+this out for CuTe's swizzles.
+
+This also explains a difference that is often noted between the two systems: composition of
+Triton's linear layouts is total, while CuTe's is partial. In Triton the intermediate object is a
+bit vector and intermediate values are combined by XOR, the carry-less addition of
+\cref{rem:twogroups}; no carries arise and the composite of linear maps is linear. In CuTe the
+intermediate object is an integer offset, intermediate values are combined by integer addition,
+and the composite is a layout exactly when the resulting carries cancel (\cref{thm:exact}). The
+price Triton pays is the restriction to shapes that are powers of two, where the two additions
+can be told apart bit by bit.
+
+\subsection{Boxes and lifting}\label{sec:box}
+
+The results can be organised categorically; this subsection is not needed elsewhere. We
+consider shapes without unit modes (unit modes carry no information about functions). For such a
+shape $S$ let $\BoxC(S)=\rng{s_0}\times\dots\times\rng{s_{m-1}}\subseteq\N^m$, with the partial addition
+that is defined on carry-free pairs. A \emph{morphism} $S\to T$ is a map
+$\BoxC(S)\to\BoxC(T)$ that preserves this partial addition; equivalently, a matrix
+$\Phi\in\N^{n\times m}$ with $\Phi\,(s_i-1)_i\le(t_j-1)_j$ componentwise. Morphisms compose by
+matrix multiplication, and by \cref{prop:additive} a layout on $S$ with values in $\D$ is the
+same thing as an additive map $\BoxC(S)\to\D$, given by the row vector of strides.
+
+In this category the colexicographic bijection $\kappa_S\colon\BoxC(S)\to\BoxC((|S|))=\rng{|S|}$,
+with matrix $(P_0,\dots,P_{m-1})$, is a morphism, and so is every coarsening map between
+compatible shapes; but their inverses---digit expansion---are not, as soon as two modes are
+merged. \emph{This is the whole source of partiality.} An $\N$-valued layout $B$ on $T$ with values below $M$ is a morphism
+$T\to(M)$; to compose it with a layout $A$ on a shape $S$ of size $M$ one must first \emph{lift} it
+along $\kappa_S$:
+\[
+ \BoxC(T')\xrightarrow{\ \Phi\ }\BoxC(S)\xrightarrow{\ D\ }\D,
+ \qquad \kappa_S\circ\Phi=B\circ\kappa_{T'\to T},
+\]
+for some by-mode refinement $T'$ of $T$. For a given $T'$ the lift is unique if it exists---its
+columns are the digit vectors of the strides of $B'$---and it exists exactly when $B'$ is
+carry-free at all scales of $S$; then $A\circ B=D\Phi$. That is \cref{cor:universal}. When no lift exists a particular $A$
+may still compose with $B$, namely when its jumps annihilate the carries (\cref{thm:exact}).
+
+Up to the bookkeeping of unit entries, the category $\mathsf{Tuple}$ of Carlisle et
+al.~\cite{carlisle2026} is the subcategory whose morphisms are the matrices with columns $0$ or
+$e_j$ (distinct for distinct columns) and matching sizes $s_i=t_j$; their \emph{tractable} layouts are the composites $\kappa_T\circ\Phi$ of such
+morphisms with a colexicographic map, and their ``mutual refinement'' is the lifting condition in
+that case. The present framework removes the restriction to tractable layouts at the cost of
+replacing diagrams by one inequality.

@@ -1,0 +1,99 @@
+\section{Layouts}\label{sec:background}
+
+We fix notation and recall the objects of CuTe~\cite{cutedocs,cecka2026}. Throughout,
+$\N=\{0,1,2,\dots\}$, $\rng{N}=\{0,\dots,N-1\}$, and $\D$ is an abelian group written
+additively; $n\cdot d$ denotes the $n$-fold sum of $d\in\D$ for $n\in\Z$. The reader may keep
+$\D=\Z$ (memory offsets) in mind; $\D=\Z^k$ (coordinates) and $\D=\F_2^k$ (XOR arithmetic) are
+discussed in \cref{sec:beyond}.
+
+\subsection{Shapes, digits, flat layouts}
+
+\begin{definition}[shape, scales]\label{def:shape}
+A (flat) \emph{shape} is a tuple $S=(s_0,\dots,s_{m-1})$ of integers $s_i\ge 1$, $m\ge 1$. Its
+\emph{prefix products} are $P_i=s_0s_1\cdots s_{i-1}$ for $0\le i\le m$ (so $P_0=1$), its
+\emph{size} is $|S|=P_m$, and its set of \emph{proper scales} is
+\[ \Sc(S)=\{P_i : 0\le i\le m\}\cap\{2,\dots,|S|-1\}. \]
+\end{definition}
+\noindent
+$\Sc(S)$ is a chain under divisibility whose members divide $|S|$, and every such chain
+$Q_1\mid Q_2\mid\dots\mid Q_k$ in $\{2,\dots,N-1\}$ with $Q_k \mid N$ arises from the shape
+$(Q_1,\,Q_2/Q_1,\dots,\,N/Q_k)$. A shape $S'$ of the same size \emph{refines} $S$ when
+$\Sc(S')\supseteq\Sc(S)$; for instance $(2,2,3)$ refines $(4,3)$ and $(2,6)$ but not $(3,4)$.
+
+A shape is a mixed-radix numeral system. For $x\in\N$ put
+\[ \dg_i(x)=\floor{x/P_i}\bmod s_i \quad (0\le i\le m-2), \qquad \dg_{m-1}(x)=\floor{x/P_{m-1}} . \]
+Then $x=\sum_i\dg_i(x)P_i$, and this is the only way to write $x$ as $\sum_i c_iP_i$ with
+$0\le c_i<s_i$ for $i<m-1$ and $c_{m-1}\ge 0$. The last digit is deliberately left unbounded:
+this is CuTe's convention for evaluating a layout outside its domain. For $x\in\rng{|S|}$ all
+digits satisfy $\dg_i(x)<s_i$, and $x\mapsto(\dg_i(x))_i$ is the colexicographic bijection
+$\rng{|S|}\to\rng{s_0}\times\dots\times\rng{s_{m-1}}$ (CuTe's \code{idx2crd}).
+
+\begin{definition}[layout]\label{def:layout}
+A (flat) \emph{layout} with values in $\D$ is a pair $L=\lay{S}{D}$ of a shape $S$ and a tuple of
+\emph{strides} $D=(d_0,\dots,d_{m-1})\in\D^m$. Its \emph{extended layout function} and its
+\emph{layout function} are
+\[ \ext{L}\colon\N\to\D,\quad \ext{L}(x)=\sum_{i=0}^{m-1}\dg_i(x)\cdot d_i, \qquad\qquad \bnd{L}=\ext{L}|_{\rng{|S|}} . \]
+The pair $\lay{s_i}{d_i}$ is the $i$-th \emph{mode}; a mode with $s_i=1$ is a \emph{unit mode}. We
+write $|L|=|S|$, and call $L$ \emph{$\N$-valued} if $\D=\Z$ and all $d_i\ge 0$.
+\end{definition}
+
+\begin{example}\label{ex:running}
+Following CuTe we write $(4,8):(1,4)$ for the column-major $4\times 8$ layout,
+$(4,8):(8,1)$ for the row-major one and $(4,8):(1,5)$ for a column-major layout with one element of
+padding per column. For $L=(2,2,4,2):(1,8,2,16)$ and $x=22$ the digits are $(0,1,1,1)$, so
+$\bnd{L}(22)=8+2+16=26$.
+\end{example}
+
+\subsection{Nested layouts and coordinates}\label{sec:nested}
+
+CuTe shapes and strides are in fact \emph{nested} tuples (``HTuples''): a nested shape is either
+an integer $\ge1$ or a tuple of nested shapes, and a nested layout pairs a nested shape with a
+stride of the same tree structure, e.g.\ $((2,2),(4,2)):((1,8),(2,16))$. Flattening (listing the
+leaves from left to right) turns a nested layout $L$ into a flat one, and CuTe defines the value of
+$L$ at an integer $x$ to be the value of its flattening. We therefore \emph{define}
+$\ext{L}$ and $\bnd{L}$ of a nested layout through its flattening.
+
+The nesting matters in two places only. First, it determines which coordinate tuples $L$ accepts.
+A shape $P$ \emph{coarsens} $S$ (written $P\preceq S$; CuTe says $P$ is \emph{compatible} with $S$)
+if $P$ is an integer equal to $|S|$, or $P=(P_0,\dots,P_{k-1})$ and $S=(S_0,\dots,S_{k-1})$ are
+tuples of the same length with $P_i\preceq S_i$ for all $i$. A coordinate for $P$ is a nested tuple
+$c$ of the same tree structure with entries bounded by those of $P$; it denotes the integer
+$\operatorname{idx}(c)$ obtained by applying the colexicographic bijection recursively, and
+$L(c):=\bnd{L}(\operatorname{idx}(c))$. Second, the top-level entries
+$L=(L_0,\dots,L_{k-1})$ of a layout are its \emph{sublayouts}, and operations may be applied ``by
+mode'', i.e.\ to each $L_i$ separately. Both uses rest on one fact:
+
+\begin{proposition}[sublayout decomposition]\label{prop:concat}
+Let $L=(L_0,\dots,L_{k-1})$ and let $x_i\in\rng{|L_i|}$. Then
+\[ \bnd{L}\Bigl(\,\sum_{i=0}^{k-1}x_i\,|L_0|\cdots|L_{i-1}|\Bigr)=\sum_{i=0}^{k-1}\bnd{L_i}(x_i). \]
+\end{proposition}
+\begin{proof}
+Since $x_i<|L_i|$, the digits of the argument with respect to the flattened shape of $L$ are the
+digits of $x_0$ (with respect to the flattened shape of $L_0$), followed by those of $x_1$, and so
+on; the strides are concatenated in the same order.
+\end{proof}
+
+\noindent Consequently every statement below is made for flat layouts; nested layouts are handled
+by flattening, and by-mode operations by applying the flat statement to each sublayout.
+
+\subsection{The layout algebra, as specified}\label{sec:spec}
+
+CuTe specifies its operations by post-conditions~\cite{cutedocs,cecka2026}. We recall the ones
+studied here; $A$ and $B$ are layouts.
+\begin{description}[leftmargin=1.2em,itemsep=2pt]
+\item[coalesce.] $R=\coal(A)$ is a flat layout with $|R|=|A|$ and $\bnd{R}=\bnd{A}$, of smallest
+ rank.
+\item[composition.] $R=A\circ B$ satisfies $B\preceq R$ and $R(c)=\ext{A}(B(c))$ for every
+ coordinate $c$ of $B$. Here $B$ is $\N$-valued.
+\item[complement.] $R=\compl(A,M)$, for $\N$-valued $A$, has an increasing layout function whose
+ image is disjoint from that of $A$ except for $0$, and ``completes'' $A$ up to size $M$; in the
+ situations of interest the concatenation $(A,R)$ is a bijection onto $\rng{M}$.
+\item[logical divide and product.]
+ $A\oslash B=A\circ(B,\compl(B,|A|))$ and $A\otimes B=(A,\,A^{*}\circ B)$, where $A^*$ is the
+ complement of $A$ with unbounded last mode.
+\end{description}
+These operations are partial: for most pairs $(A,B)$ no layout $A\circ B$ exists. CuTe's
+implementations guard composition by two \emph{divisibility conditions} and reduce a multi-mode
+$B$ to its modes by a distributive rule (\cref{sec:cute-rule}). Which pairs are composable, why
+the conditions have the form they do, and whether the rules are sound, are the questions this paper
+answers.

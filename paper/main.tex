@@ -1,0 +1,76 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tikz}
+\usepackage[hidelinks,pdftitle={Layouts and Carries: A Mathematical Foundation for the CuTe Layout Algebra},pdfauthor={Auden Venn}]{hyperref}
+\usepackage{cleveref}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% ---- notation ------------------------------------------------------------------------------
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\D}{\mathbb{D}}                       % codomain: an abelian group
+\newcommand{\rng}[1]{[#1]}                        % [N] = {0,...,N-1}
+\newcommand{\floor}[1]{\left\lfloor #1 \right\rfloor}
+\newcommand{\ceil}[1]{\left\lceil #1 \right\rceil}
+\newcommand{\lay}[2]{#1\,{:}\,#2}                 % shape:stride
+\newcommand{\Sc}{\operatorname{Sc}}               % proper scales of a shape
+\newcommand{\spec}{\operatorname{spec}}           % floor spectrum
+\newcommand{\ext}[1]{\hat{f}_{#1}}                % extended layout function
+\newcommand{\bnd}[1]{f_{#1}}                      % bounded layout function
+\newcommand{\dg}{\delta}                          % digits
+\newcommand{\jump}{\gamma}
+\newcommand{\Cdef}{C}
+\newcommand{\bit}{\operatorname{bit}}                % binary digit
+\newcommand{\coal}{\operatorname{coalesce}}
+\newcommand{\compl}{\operatorname{complement}}
+\newcommand{\BoxC}{\mathsf{Box}}
+\newcommand{\cmark}{\textsc{l}}                    % machine-checked (Lean)
+\newcommand{\lean}[1]{\texttt{#1}}
+\newcommand{\code}[1]{\texttt{#1}}
+% \mech marks a statement that is machine-checked in Lean (the Lean subsection lists exactly what is proved).
+\newcommand{\mech}{\textnormal{\textsuperscript{\,\textsf{L}}}}
+
+\lstset{basicstyle=\ttfamily\small,columns=fullflexible,keepspaces=true,frame=single,breaklines=true}
+
+\title{Layouts and Carries:\\ A Mathematical Foundation for the CuTe Layout Algebra}
+\author{Auden Venn\\ \small Independent Researcher}
+\date{November 2026}
+
+\begin{document}
+\maketitle
+
+\input{sec/abstract}
+\input{sec/intro}
+\input{sec/background}
+\input{sec/carry}
+\input{sec/normalform}
+\input{sec/composition}
+\input{sec/complement}
+\input{sec/beyond}
+\input{sec/swizzle}
+\input{sec/mechanization}
+\input{sec/related}
+\input{sec/conclusion}
+
+\bibliographystyle{plain}
+\bibliography{refs}
+\end{document}

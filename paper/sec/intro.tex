@@ -1,0 +1,98 @@
+\section{Introduction}
+
+Modern GPU kernels are written against instructions that prescribe how their operands are laid out:
+which thread holds which matrix element in which register, how a tile sits in shared memory,
+which offsets a tensor-memory load touches. CuTe~\cite{cutedocs,cecka2026}, the core library of
+CUTLASS~3 and~4 and of the CuTe DSL, represents all of these by one kind of object, the
+\emph{layout}: a pair of nested integer tuples $\lay{\text{shape}}{\text{stride}}$, read as the
+function that expands an index in the mixed radix given by the shape and takes the inner product
+of the digits with the strides. Layouts are combined by an algebra---\code{coalesce},
+\code{composition}, \code{complement}, \code{logical\_divide}, \code{logical\_product} and
+relatives---with which a kernel author tiles a matrix, hands each thread its fragment, or checks
+that a data layout matches an instruction. The same abstraction underlies
+FlashAttention's kernels and several compilers.
+
+The algebra is partial, and its definedness is subtle. \code{composition(A,B)} should be a layout
+whose function is $A\circ B$; such a layout usually does not exist, the implementation decides
+by ``stride'' and ``shape'' divisibility checks, and it reduces a multi-mode $B$ to its modes by a
+distributive rule. The existing mathematical accounts are of three kinds. The author's
+specification~\cite{cecka2026} states post-conditions and derives \emph{sufficient} conditions,
+without proofs. Shah's note~\cite{shah2024} proves sufficient admissibility conditions for
+complement and composition, and points out that the distributive rule is unsound in general.
+Carlisle, Shah, Stern and VanKoughnett~\cite{carlisle2026} give a thorough treatment of flat
+layouts and a categorical framework that explains the operations for the class of
+\emph{tractable} layouts. None of them says exactly \emph{when} a composite exists, or why the
+conditions and formulas are what they are; and, as we report below, the implementations do not
+agree with the functional specification in either direction.
+
+\paragraph{The idea.} A shape is a mixed-radix numeral system, and digit expansion is not additive:
+adding two numbers produces carries. We show that this is the only thing that happens. Every
+layout function can be written
+\[ f(x)=x\cdot d_0+\sum_i\floor{x/P_i}\cdot\jump_i,\qquad \jump_i=d_i-s_{i-1}d_{i-1}, \]
+with $P_i$ the prefix products of the shape, and satisfies the \emph{carry identity}
+\[ f(x+y)=f(x)+f(y)+\sum_i c_i(x,y)\cdot\jump_i , \]
+where $c_i(x,y)\in\{0,1\}$ is the carry into digit $i$. The ``jumps'' $\jump_i$ measure how far the
+strides are from those of a linear function. Everything else is bookkeeping of carries.
+
+\paragraph{Contributions.}
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+\item \textbf{A one-identity foundation} (\cref{sec:carry}), valid for strides in an arbitrary
+ abelian group: integers of either sign, coordinate vectors, bit vectors under XOR.
+\item \textbf{Which functions are layouts} (\cref{sec:normalform}). Every function on
+ $\{0,\dots,N-1\}$ vanishing at $0$ has a unique expansion in the functions $\floor{x/Q}$; it is a
+ layout function if and only if the scales $Q\ge2$ that occur form a divisibility chain dividing
+ $N$ (\cref{thm:spectrum}). This re-proves, for all abelian groups, the theorem of
+ \cite{carlisle2026} that \code{coalesce} is a normal form, and gives an $O(N\log N)$
+ recognition algorithm; for mappings given by their values this answers the question,
+ left open in~\cite[\S3.7]{bhaskaracharya2025}, of recovering shape and strides from a mapping.
+\item \textbf{Exact composability} (\cref{sec:composition}). A composite, if it exists, is
+ forced: its strides are the values of the outer layout at the strides of the inner one. It exists
+ if and only if a \emph{carry defect} $\sum_i C_i\jump_i$ vanishes (\cref{thm:defect,thm:exact}).
+ For outer layouts with independent jumps---for instance row-major, column-major and padded
+ matrices---this is an explicit inequality (\cref{thm:carryfree}). CuTe's two divisibility
+ conditions describe the case in which every stride of the inner layout has a single non-zero
+ digit that divides the size of its mode, or whose multiples stay inside that mode
+ (\cref{prop:monomial}); we prove the single-mode rule sound, and identify the two ways in
+ which rule and truth differ: \emph{interference} between modes, which makes the distributive
+ rule unsound, and composites with sums of strides, which the rule cannot produce.
+\item \textbf{Complement and division} (\cref{sec:complement}). Complements are the direct-sum
+ decompositions of an interval, a classical subject (Krasner factorisations;
+ de~Bruijn~\cite{debruijn1956}, Long~\cite{long1967}) that long predates GPUs; this explains the formula and shows that the admissibility
+ condition of \cite{shah2024,carlisle2026} cannot be weakened by any device. For composition with a compact layout---in particular
+ for \code{logical\_divide}---we give a criterion that is exact for an arbitrary outer layout
+ (\cref{thm:division}).
+\item \textbf{The relation to XOR-based layouts and to the categorical framework}
+ (\cref{sec:beyond}): Triton's linear layouts~\cite{zhou2026} are the layouts with values in
+ $\F_2^k$ on binary shapes, and their composition is total because their intermediate addition
+ has no carries; the category of~\cite{carlisle2026}, up to the bookkeeping of unit modes, sits
+ inside a category of ``boxes'' in which
+ composition is a lifting problem.
+\item \textbf{Swizzles} (\cref{sec:swizzle}). Offsets carry two group laws, integer addition and
+ XOR, which differ by the carries of the binary radix. A swizzle is a layout for XOR, and a
+ swizzled layout is XOR-linear up to the parity of binary carries (\cref{thm:swzcomp}). We
+ characterise when, for offset zero, it is an $\F_2$-valued layout, the kind of object used by
+ PyCuTe and Triton
+ (\cref{cor:xorlinear}); give a closed-form criterion, for bit-disjoint layouts, for a slice of
+ it to decay to an ordinary layout with possibly negative strides (\cref{thm:decay}); and give
+ conditions under which CuTe's operations on swizzled layouts are valid (\cref{sec:swzops}).
+\item \textbf{Validation} (\cref{sec:mechanization}). The core of the theory---the floor-sum form,
+ the carry identity, the characterisation of layouts as carry-free additive maps and by chain
+ spectra, the composition formula with its defect, and the carry-free criterion---is formalised in Lean~4 with Mathlib
+ (statements marked \mech); the main criteria and the examples are in addition checked by
+ exhaustive and randomised programs; and differential tests compare the theory with three implementations (C++
+ CuTe, CUTLASS's \code{pycute}, and the reference implementation PyCuTe), including their
+ swizzle operations.
+\end{itemize}
+
+\paragraph{What is and is not new.} The normal-form theorem for coalesce, the existence and
+uniqueness of complements under the divisibility condition, and a composition algorithm for
+tractable layouts are due to~\cite{shah2024,carlisle2026}; sufficient conditions for composition
+are in~\cite{shah2024,cecka2026}. New here are the carry identity and the slope--jump
+coordinates as an organising principle, the spectral characterisation of layout functions, the
+necessary and sufficient conditions for composition and division, the link to the classical
+theory of direct-sum decompositions of intervals, proofs of these criteria for strides in an
+arbitrary abelian group, and the mechanisation of the core.
+Swizzles as layouts with XOR strides are due to~\cite{cecka2026}; their relation to CuTe's composed
+layouts, the decay criterion and the conditions of \cref{sec:swzops} are new. We restrict
+attention to the \emph{mathematics} of layouts; static versus dynamic integers, tensors, and code
+generation are outside our scope.

@@ -1,0 +1,10 @@
+Layouts and Carries: A Mathematical Foundation for the CuTe Layout Algebra
+Copyright 2026 Auden Venn
+
+The software in this repository (python/, lean/, tests/, scripts/) is licensed under the
+Apache License, Version 2.0 (see LICENSE).  The paper (paper/) is licensed under the Creative
+Commons Attribution 4.0 International License (see paper/LICENSE).
+
+This repository contains no third-party code.  The tests run against NVIDIA CUTLASS / CuTe,
+NVlabs CuTe (PyCuTe) and NVIDIA's redistributable CUDA headers, which scripts/fetch_refs.sh
+downloads from their publishers and which are subject to their own licenses.

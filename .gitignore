@@ -1,0 +1,13 @@
+# third-party sources fetched by scripts/fetch_refs.sh
+/refs/
+# Lean build products and dependencies
+/lean/.lake/
+# LaTeX build products
+/paper/build/
+*.aux
+*.log
+*.out
+# Python
+__pycache__/
+*.pyc
+.DS_Store

@@ -1,0 +1,32 @@
+\begin{abstract}
+CuTe, the core of NVIDIA's CUTLASS, describes how tensors, threads and hardware instructions index
+memory by \emph{layouts}---nested (shape, stride) pairs---and manipulates them with an algebra of
+partial operations: coalesce, composition, complement, logical division and product. The operations
+are specified by post-conditions and guarded by divisibility checks, and existing accounts give
+sufficient conditions for them to be defined. We show that the algebra is governed by a single
+identity. Writing a layout function in ``slope--jump'' form,
+$f(x)=x\,d_0+\sum_i\lfloor x/P_i\rfloor\,\gamma_i$, one has
+$f(x+y)=f(x)+f(y)+\sum_i c_i(x,y)\,\gamma_i$, where $c_i$ is the carry into digit $i$ of the
+mixed-radix system given by the shape: a layout is additive up to carries, and each carry is
+charged a jump $\gamma_i$. From this we obtain (1) a characterisation of layout functions---the
+M\"obius transform of their first differences is supported on a divisibility chain---which yields
+the coalesced normal form and a recognition algorithm; (2) an exact criterion for composition:
+the composite, when it exists, is obtained by evaluating the outer layout at the strides of the
+inner one, and it exists if and only if a ``carry defect'' vanishes; CuTe's stride and shape
+divisibility conditions describe a special case, that of strides with a single non-zero digit
+dividing the size of its mode; (3) the identification of complements with the classical
+direct-sum decompositions of an interval (Krasner, de~Bruijn, Long), and an exact criterion for
+logical division. The results on normal forms and composition hold for strides in any abelian
+group,
+covering negative strides, coordinate-valued layouts and XOR-based (Triton-style) layouts. Applied
+to the binary radix, the same identity covers CuTe's swizzles: a swizzle is a layout for the XOR
+group law on offsets; we characterise when a swizzled layout without offset is XOR-linear, give a
+closed-form
+criterion, under a bit-disjointness assumption, for a slice of it to decay to an ordinary layout,
+and give conditions under which CuTe's operations on swizzled layouts are valid. The criteria explain two behaviours of current implementations that we observe in differential
+testing: composites that are silently wrong because modes of the inner layout interfere, and
+composable pairs that are rejected. The carry identity, the characterisation of layout functions,
+the composition formula with its defect and the carry-free criterion for the naive composite are
+machine-checked in Lean~4; the remaining results have paper proofs and are validated by exhaustive and randomised
+checks.
+\end{abstract}

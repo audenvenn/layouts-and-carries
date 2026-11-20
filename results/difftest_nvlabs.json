@@ -1,0 +1,181 @@
+{
+ "implementation": "nvlabs",
+ "seed": 0,
+ "n": 20000,
+ "composition_random_flat": {
+  "counts": {
+   "correct": 12925,
+   "correctly_rejected": 4665,
+   "rejected_but_composable": 2058,
+   "rejected_but_composable/non_dividing": 91,
+   "rejected_but_composable/sum_stride": 1967,
+   "silent_wrong": 352,
+   "silent_wrong/interference_between_modes": 352,
+   "silent_wrong/no_layout_exists": 352
+  },
+  "examples": {
+   "rejected_but_composable/non_dividing": [
+    "(5,1):(16,8) o 4:3 = ((2,2):(48,24))  [ValueError: Stride divisibility condition violated: composition((5, 1):(16, 8), 4:3)]",
+    "(5,1):(24,4) o (1,4):(1,3) = (1:0 , (2,2):(72,28))  [ValueError: Stride divisibility condition violated: composition((5, 1):(24, 4), 4:3)]",
+    "(5,2):(7,6) o 4:3 = ((2,2):(21,13))  [ValueError: Stride divisibility condition violated: composition((5, 2):(7, 6), 4:3)]",
+    "(8,1):(1,7) o 6:3 = ((3,2):(3,8))  [ValueError: Stride divisibility condition violated: composition((8, 1):(1, 7), 6:3)]"
+   ],
+   "rejected_but_composable/sum_stride": [
+    "(2,1):(3,12) o 2:3 = (2:15)  [ValueError: Stride divisibility condition violated: composition((2, 1):(3, 12), 2:3)]",
+    "(2,1):(5,16) o 2:3 = (2:21)  [ValueError: Stride divisibility condition violated: composition((2, 1):(5, 16), 2:3)]",
+    "(2,1):(9,7) o 2:3 = (2:16)  [ValueError: Stride divisibility condition violated: composition((2, 1):(9, 7), 2:3)]",
+    "(2,1):(0,8) o 2:3 = (2:8)  [ValueError: Stride divisibility condition violated: composition((2, 1):(0, 8), 2:3)]"
+   ],
+   "silent_wrong/interference_between_modes": [
+    "(4,2):(16,12) o (2,2):(3,3) -> (2,2):(48,48)=[0, 48, 48, 96]; A(B(i))=[0, 48, 48, 44]",
+    "(8,1):(24,2) o (2,2):(4,4) -> (2,2):(96,96)=[0, 96, 96, 192]; A(B(i))=[0, 96, 96, 2]",
+    "(2,2):(12,4) o (4,2):(1,1) -> ((2,2),2):((12,4),12)=[0, 12, 4, 16, 12, 24, 16, 28]; A(B(i))=[0, 12, 4, 16, 12, 4, 16, 8]",
+    "(8,1):(12,8) o (2,2):(5,3) -> (2,2):(60,36)=[0, 60, 36, 96]; A(B(i))=[0, 60, 36, 8]"
+   ]
+  }
+ },
+ "composition_random_nested": {
+  "counts": {
+   "correct": 12930,
+   "correctly_rejected": 4728,
+   "rejected_but_composable": 2019,
+   "rejected_but_composable/non_dividing": 75,
+   "rejected_but_composable/sum_stride": 1944,
+   "silent_wrong": 323,
+   "silent_wrong/interference_between_modes": 323,
+   "silent_wrong/no_layout_exists": 323
+  },
+  "examples": {
+   "rejected_but_composable/non_dividing": [
+    "(8,1):(16,4) o 4:5 = ((2,2):(80,36))  [ValueError: Stride divisibility condition violated: composition((8, 1):(16, 4), 4:5)]",
+    "(5,2):(6,3) o 4:3 = ((2,2):(18,9))  [ValueError: Stride divisibility condition violated: composition((5, 2):(6, 3), 4:3)]",
+    "(5,2):(8,8) o 4:3 = ((2,2):(24,16))  [ValueError: Stride divisibility condition violated: composition((5, 2):(8, 8), 4:3)]",
+    "(5,2):(2,6) o 4:3 = ((2,2):(6,8))  [ValueError: Stride divisibility condition violated: composition((5, 2):(2, 6), 4:3)]"
+   ],
+   "rejected_but_composable/sum_stride": [
+    "(2,1):(24,4) o (2,):(3,) = (2:28)  [ValueError: Stride divisibility condition violated: composition((2, 1):(24, 4), 2:3)]",
+    "(2,1):(4,1) o 2:9 = (2:8)  [ValueError: Stride divisibility condition violated: composition((2, 1):(4, 1), 2:9)]",
+    "(2,1):(16,12) o 2:9 = (2:64)  [ValueError: Stride divisibility condition violated: composition((2, 1):(16, 12), 2:9)]",
+    "(2,1):(4,6) o (2,):(5,) = (2:16)  [ValueError: Stride divisibility condition violated: composition((2, 1):(4, 6), 2:5)]"
+   ],
+   "silent_wrong/interference_between_modes": [
+    "(3,1):(0,3) o (2,2):(1,2) -> (2,2):(0,0)=[0, 0, 0, 0]; A(B(i))=[0, 0, 0, 3]",
+    "(3,2):(6,5) o (2,2):(1,2) -> (2,2):(6,12)=[0, 6, 12, 18]; A(B(i))=[0, 6, 12, 5]",
+    "(6,1):(6,5) o (2,2):(5,2) -> (2,2):(30,12)=[0, 30, 12, 42]; A(B(i))=[0, 30, 12, 11]",
+    "(5,1):(1,7) o (1,(2,2)):(9,(3,2)) -> (1,(2,2)):(11,(3,2))=[0, 3, 2, 5]; A(B(i))=[0, 3, 2, 7]"
+   ]
+  }
+ },
+ "composition_structured": {
+  "counts": {
+   "correct": 17158,
+   "correctly_rejected": 2624,
+   "rejected_but_composable": 182,
+   "rejected_but_composable/sum_stride": 182,
+   "silent_wrong": 36,
+   "silent_wrong/interference_between_modes": 36,
+   "silent_wrong/no_layout_exists": 36
+  },
+  "examples": {
+   "rejected_but_composable/sum_stride": [
+    "(4,3):(3,1) o 2:6 = (2:7)  [ValueError: Stride divisibility condition violated: composition((4, 3):(3, 1), 2:6)]",
+    "(2,6):(1,4) o 2:3 = (2:5)  [ValueError: Stride divisibility condition violated: composition((2, 6):(1, 4), 2:3)]",
+    "(4,3):(3,1) o 2:6 = (2:7)  [ValueError: Stride divisibility condition violated: composition((4, 3):(3, 1), 2:6)]",
+    "(4,3):(3,1) o 2:6 = (2:7)  [ValueError: Stride divisibility condition violated: composition((4, 3):(3, 1), 2:6)]"
+   ],
+   "silent_wrong/interference_between_modes": [
+    "(3,4):(1,5) o (2,2):(1,2) -> (2,2):(1,2)=[0, 1, 2, 3]; A(B(i))=[0, 1, 2, 5]",
+    "(3,2,2):(4,2,1) o (2,2):(2,1) -> (2,2):(8,4)=[0, 8, 4, 12]; A(B(i))=[0, 8, 4, 2]",
+    "(3,2,2):(4,2,1) o (2,2):(1,2) -> (2,2):(4,8)=[0, 4, 8, 12]; A(B(i))=[0, 4, 8, 2]",
+    "(4,3):(1,7) o (2,3):(3,1) -> (2,3):(3,1)=[0, 3, 1, 4, 2, 5]; A(B(i))=[0, 3, 1, 7, 2, 8]"
+   ]
+  }
+ },
+ "coalesce": {
+  "counts": {
+   "identical_to_normal_form": 19479,
+   "identical_up_to_the_stride_of_a_size_1_layout": 521
+  },
+  "examples": {}
+ },
+ "complement": {
+  "counts": {
+   "non_tiling/returned_disjoint_ordered_layout": 1969,
+   "non_tiling/tiles_a_longer_interval": 7239,
+   "rejected/no_complement_exists": 6410,
+   "tiling/identical": 4382
+  },
+  "examples": {}
+ },
+ "logical_divide": {
+  "counts": {
+   "correct": 14346,
+   "correctly_rejected": 5617,
+   "covers_fewer_elements_than_A/values_consistent": 6,
+   "covers_fewer_elements_than_A/values_wrong": 1,
+   "covers_more_elements_than_A/values_consistent": 26,
+   "rejected_but_divisible": 4
+  },
+  "examples": {
+   "covers_fewer_elements_than_A/values_consistent": [
+    "logical_divide((3,4):(4,12), 4:1) -> (4,2):(4,16) has size 8, |A|=12",
+    "logical_divide((2,6):(6,12), 3:1) -> (3,3):(6,18) has size 9, |A|=12",
+    "logical_divide((2,6):(6,12), 3:1) -> (3,3):(6,18) has size 9, |A|=12",
+    "logical_divide((2,9):(1,2), 3:1) -> (3,5):(1,3) has size 15, |A|=18"
+   ],
+   "covers_fewer_elements_than_A/values_wrong": [
+    "logical_divide((3,2,2):(1,3,0), 2:2) -> (2,(2,2)):(2,(1,4)) has size 8, |A|=12"
+   ],
+   "covers_more_elements_than_A/values_consistent": [
+    "logical_divide((3,2):(2,6), 2:1) -> (2,4):(2,4) has size 8, |A|=6",
+    "logical_divide((3,2):(1,3), 2:1) -> (2,4):(1,2) has size 8, |A|=6",
+    "logical_divide((3,2):(1,3), 2:1) -> (2,4):(1,2) has size 8, |A|=6",
+    "logical_divide((3,2):(0,0), 2:1) -> (2,4):(0,0) has size 8, |A|=6"
+   ],
+   "rejected_but_divisible": [
+    "logical_divide((2,6,2):(2,4,16), 3:1): exists as [3:2, (4,2):(6,16)]  [ValueError: Shape divisibility condition violated: composition((12, 2):(2, 16), 6:3)]",
+    "logical_divide((2,3,2,2):(6,1,3,2), 4:1): exists as [(2,2):(6,1), (3,2):(2,2)]  [ValueError: Shape divisibility condition violated: composition((2, 6, 2):(6, 1, 2), 8:4)]",
+    "logical_divide((3,4,2):(0,0,5), (2,2):(1,2)): exists as [2:0, 2:0, (3,2):(0,5)]  [ValueError: Shape divisibility condition violated: composition((12, 2):(0, 5), 4:4)]",
+    "logical_divide((2,12,2):(1,2,12), 3:1): exists as [3:1, (8,2):(3,12)]  [ValueError: Shape divisibility condition violated: composition((24, 2):(1, 12), 12:3)]"
+   ]
+  }
+ },
+ "logical_product": {
+  "counts": {
+   "correct": 8915,
+   "correctly_rejected": 641,
+   "rejected_but_exists": 419,
+   "silent_wrong": 25
+  },
+  "examples": {
+   "rejected_but_exists": [
+    "logical_product(2:2, 2:3)  [ValueError: Stride divisibility condition violated: composition((2, 1):(1, 4), 2:3)]",
+    "logical_product(2:4, 2:5)  [ValueError: Stride divisibility condition violated: composition((4, 1):(1, 8), 2:5)]",
+    "logical_product(2:2, (1,2):(4,5))  [ValueError: Stride divisibility condition violated: composition((2, 1):(1, 4), 2:5)]",
+    "logical_product(2:2, 2:3)  [ValueError: Stride divisibility condition violated: composition((2, 1):(1, 4), 2:3)]"
+   ],
+   "silent_wrong": [
+    "logical_product(2:8, (2,2):(2,6)) -> (2,(2,2)):(8,(2,6))=[0, 8, 2, 10, 6, 14, 8, 16]; truth [0, 8, 2, 10, 6, 14, 16, 24]",
+    "logical_product(2:4, (2,2):(2,2)) -> (2,(2,2)):(4,(2,2))=[0, 4, 2, 6, 2, 6, 4, 8]; truth [0, 4, 2, 6, 2, 6, 8, 12]",
+    "logical_product(2:8, (2,2):(5,4)) -> (2,(2,2)):(8,(5,4))=[0, 8, 5, 13, 4, 12, 9, 17]; truth [0, 8, 5, 13, 4, 12, 17, 25]",
+    "logical_product(2:2, (2,2):(1,1)) -> (2,(2,2)):(2,(1,1))=[0, 2, 1, 3, 1, 3, 2, 4]; truth [0, 2, 1, 3, 1, 3, 4, 6]"
+   ]
+  }
+ },
+ "inverse": {
+  "counts": {
+   "left_inverse/correct": 7986,
+   "left_inverse/rejected_injective_layout_without_stride_chain": 308,
+   "right_inverse/correct_and_maximal": 9968,
+   "right_inverse/correct_but_size_differs_from_compact_part": 32
+  },
+  "examples": {
+   "right_inverse/correct_but_size_differs_from_compact_part": [
+    "right_inverse((1,2,3):(1,1,1)) -> 2:1, K=3",
+    "right_inverse((2,1,4):(1,3,1)) -> 2:1, K=4",
+    "right_inverse((2,4):(1,1)) -> 2:1, K=4",
+    "right_inverse((2,4,1):(1,1,2)) -> 2:1, K=4"
+   ]
+  }
+ }
+}

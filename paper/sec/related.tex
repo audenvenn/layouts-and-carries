@@ -1,0 +1,67 @@
+\section{Related work}\label{sec:related}
+
+\paragraph{CuTe and its specifications.}
+CuTe grew out of Graphene~\cite{hagedorn2023} and is documented in the CUTLASS
+repository~\cite{cutedocs}; Cecka's paper~\cite{cecka2026} is the authoritative specification. It
+defines layouts with nested shapes and strides in an ``integer-semimodule'', states each operation
+by post-conditions on an extended domain, and derives the stride and shape divisibility conditions
+and, for distributivity over the modes of the inner layout, the condition that those modes be
+mutually segregated, as sufficient conditions; it contains no theorems or proofs, and its
+reference implementation PyCuTe~\cite{pycute} does not check the segregation condition. Our results need the stride domain to be a $\Z$-module, i.e.\ an
+abelian group; the semimodule axioms of~\cite{cecka2026} omit distributivity, without which
+subdividing a mode need not preserve the function.
+
+\paragraph{Mathematical accounts.}
+Shah~\cite{shah2024} gave the first rigorous treatment: admissibility conditions for complement
+and composition with soundness proofs, the counterexample to unconditional distributivity that we
+reuse in \cref{ex:shah}, and the observation that layout-expressible permutations come from a
+groupoid. His single-mode composition rule is contained in our \cref{prop:monomial}(a,b); his
+multi-mode
+condition is pairwise and, as \cref{ex:three} shows, needs to be strengthened for three or more
+modes.
+Carlisle, Shah, Stern and VanKoughnett~\cite{carlisle2026} develop the theory of flat and nested
+layouts with non-negative strides in detail---normal form of coalesce, compact layouts,
+existence and uniqueness of complements---and introduce categories $\mathsf{Tuple}$ and
+$\mathsf{Nest}$ whose morphisms encode \emph{tractable} layouts, with a graphical calculus and a
+composition algorithm based on mutual refinement. Their categories and composition algorithm do
+not cover layouts whose sorted strides fail the divisibility chain (e.g.\ $(4,8):(1,5)$) and give
+no necessary condition for composability, and they work with non-negative integer strides. Our \cref{thm:spectrum} and
+\cref{thm:complement} recover their normal-form and complement theorems by different arguments;
+\cref{thm:exact} is exact and unrestricted, and \cref{thm:division} is exact for a compact inner
+layout; \cref{sec:box} relates their category to ours.
+
+\paragraph{Other layout formalisms.}
+Triton's linear layouts~\cite{zhou2026} model layouts as $\F_2$-linear maps on bit vectors,
+restricted to power-of-two shapes; \cref{sec:beyond} relates them to CuTe layouts with values in
+$\F_2^k$. Bhaskaracharya et al.~\cite{bhaskaracharya2025} encode both CuTe layouts and linear
+layouts as integer set relations and delegate the operations to the Integer Set Library; their
+quasi-affine expressions are instances of our floor-sum form, and the chain condition of
+\cref{thm:spectrum} characterises which of them are layouts. LEGO~\cite{tavakkoli2025} and
+Axe~\cite{hou2026} are layout languages for code generators with different aims.
+
+\paragraph{Swizzles.}
+The CuTe documentation and source describe swizzles and composed layouts
+operationally~\cite{cutedocs}. Cecka~\cite{cecka2026} obtains swizzles as layouts whose strides
+are bit vectors added by XOR and composes one with a thread-value layout as an example; Triton's
+linear layouts are objects of the same kind. We are not aware of an earlier statement of when the two
+representations agree (\cref{cor:xorlinear}), of the decay criterion (\cref{thm:decay}), or of
+the conditions of \cref{sec:swzops}.
+
+\paragraph{Mechanised proofs.}
+Liu's thesis~\cite{liu2026} formalises a fragment of the layout algebra (concatenation, coalesce,
+composition) in Rocq and proves soundness theorems for it, together with a correctness result for
+layout-permuted loop nests. As printed in~\cite[\S6.4.3]{liu2026}, the composition function
+distributes over the modes of the inner layout and its soundness statement carries no
+interference condition; by our reading of the printed definition it returns $(3,2):(2,3)$ on
+\cref{ex:shah}. We have not examined the Rocq development itself.
+Our Lean development (\cref{sec:lean}) is organised around the carry identity and proves the
+composition formula together with its defect term, which is what makes the interference condition
+explicit.
+
+\paragraph{Number theory.}
+The pairs of sets with $I\oplus J=\N$ were classified by de~Bruijn~\cite{debruijn1956}. The
+finite case $I\oplus J=\{0,\dots,n-1\}$ is classical as well---such pairs are known as Krasner
+factorisations, see~\cite{bodini2006}---and we use the formulation of Long~\cite{long1967}.
+Bodini and Rivals~\cite{bodini2006} study the tiles of an interval algorithmically and note the uniqueness and involutivity of the ``dual'' that we use in
+\cref{prop:unique-complement,cor:double}. That carries are $2$-cocycles is folklore; see Isaksen~\cite{isaksen2002}.
+We are not aware of earlier uses of either in the context of tensor layouts.

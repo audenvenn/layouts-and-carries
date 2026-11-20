@@ -1,0 +1,240 @@
+\section{Validation}\label{sec:mechanization}
+
+\subsection{Lean formalisation}\label{sec:lean}
+
+The core of \cref{sec:carry,sec:normalform,sec:composition} is formalised in Lean~4~\cite{moura2021}
+with Mathlib~\cite{mathlib2020} (Lean and Mathlib \code{v4.37.0-rc1}); the development is about
+$1\,500$ lines, contains no \code{sorry}, and depends only on the standard axioms \code{propext},
+\code{Classical.choice} and \code{Quot.sound}. A flat layout is a list of pairs (size, stride)
+with strides in an arbitrary additive commutative group, \code{eval} is the extended layout
+function defined by recursion on the list exactly as in \cref{def:layout}, and a ``floor sum'' is
+the function $x\mapsto\sum_j\floor{x/Q_j}\cdot\jump_j$ attached to a list of (scale, jump) pairs.
+\Cref{tab:lean} lists what is proved. Statements marked \mech{} in the text are those of the
+table; mode sizes are assumed positive throughout, as in \cref{def:shape}.
+
+\begin{table}[ht]\centering\small
+\begin{tabular}{@{}lll@{}}
+\toprule
+result & Lean name & remarks\\
+\midrule
+\Cref{prop:floorsum} & \code{eval\_eq\_floorSum} & \\
+\Cref{thm:carry} & \code{eval\_add}, \code{floorSum\_add} & two summands$^{*}$\\
+\Cref{prop:additive} & \code{additive\_iff\_layout} & the equivalence\\
+\Cref{lem:expansion} & \code{fexp\_coeff}, \code{fexp\_unique} & existence, uniqueness$^{\dagger}$\\
+\Cref{thm:spectrum} & \code{additive\_iff\_spec} & shapes without unit modes$^{\S}$\\
+\Cref{thm:spectrum}(a) & \code{layout\_iff\_chain} & \\
+\Cref{cor:coalesce}, merge step & \code{eval\_merge} & \\
+\Cref{thm:defect} & \code{eval\_dot}, \code{eval\_comp} & coordinates; indices\\
+\Cref{cor:naive} & \code{eval\_comp\_eq\_naive\_iff} & pointwise, both directions\\
+\Cref{lem:forced}, $T'=T$ & \code{comp\_over\_shape\_unique} & \\
+\Cref{lem:forced} with \cref{cor:naive} & \code{comp\_over\_shape\_iff} & see below$^{\ddagger}$\\
+\Cref{thm:carryfree}(a) & \code{eval\_comp\_of\_carryFree\_ineq} & \\
+\Cref{thm:carryfree}(b) & \code{carryFree\_of\_naive\_correct} & first assertion$^{\P}$\\
+\Cref{ex:docs,ex:shah,ex:three} & file \code{Examples.lean} & by evaluation\\
+\Cref{lem:swizzle}(a), (b) & \code{swizzle\_involutive}, \code{swizzle\_xor} & see below$^{\sharp}$\\
+\bottomrule
+\end{tabular}
+\caption{Machine-checked statements. $^{*}$The case of $n$ summands is contained in
+\code{eval\_dot}. $^{\dagger}$With the coefficients defined by the triangular recursion; the M\"obius
+formula is not formalised. $^{\S}$More generally \code{layout\_over\_shape\_iff}, for shapes with pairwise distinct scales and
+any initial segment of the domain; parts (b) and (c) are not formalised separately. $^{\ddagger}$A layout with the shape of $B$ and function $g$ exists if and only if the
+carry defect vanishes on the whole domain. $^{\P}$The naive composite is correct on the whole
+domain only if $B$ is carry-free; \code{naive\_correct\_iff\_carryFree} combines (a) and (b).
+$^{\sharp}$Only the involution in (a) and the XOR identity in (b), for one field and a right
+shift; the integer formula and the layout representation are not formalised.}\label{tab:lean}
+\end{table}
+
+Not formalised, and resting on the proofs given in the text together with the checks of
+\cref{sec:checks}: the uniqueness of the strides in \cref{prop:additive}, the uniqueness statement
+of \cref{cor:coalesce},
+\cref{cor:recognition}, \cref{lem:forced} for proper refinements, \cref{thm:exact}, the last
+assertion of \cref{thm:carryfree}(b), \cref{cor:universal},
+\cref{prop:monomial,prop:dilated,prop:laws}, all of \cref{sec:complement,sec:beyond}, and the
+rest of \cref{sec:swizzle}.
+
+\subsection{Checks of the theory}\label{sec:checks}
+
+The criteria and examples of \cref{sec:carry,sec:normalform,sec:composition,sec:complement} are
+checked by a program that is independent of all CuTe implementations: \code{layout\_theory.py} implements
+the definitions (evaluation, floor spectrum, recognition, exact composition, complement), and
+\code{verify\_theory.py} runs fifteen checks, each exhaustive over a small universe or
+randomised. For instance, the spectral criterion (\cref{thm:spectrum}) is compared with a direct
+search over all shapes for all $14\,209$ functions on $\rng N$, $N\le9$, with values in a small
+range; the composition formula and the four conditions of \cref{thm:exact} are compared with a
+brute-force search over all by-mode refinements on $6\,000$ random pairs; \cref{prop:dilated} is
+checked for all $50\,826$ triples $(q,\rho,t)$ with $q<40$; Long's theorem for all $M\le24$.
+The same script tests the published sufficient conditions on random instances: the multi-mode
+condition of~\cite{shah2024} was sound in all $26\,798$ admissible instances with at most two
+modes and failed in $21$ of $9\,124$ admissible instances with three (\cref{ex:three} is one), and
+the segregation condition of~\cite{cecka2026}, with stride divisibility taken with respect to
+all scales of the outer layout, excluded interference between modes in all $26\,436$ instances
+that satisfy it.
+A draft of \cref{sec:background,sec:carry,sec:normalform,sec:composition,sec:complement,sec:beyond}
+was in addition reviewed independently, with separately written exhaustive checks; the errors
+found are corrected in this version.
+The statements of \cref{sec:swizzle} are checked by a second script, \code{verify\_swizzle.py}
+(fourteen checks, for CuTe's swizzles and for arbitrary pairings): for instance \cref{cor:xorlinear} against a search over all by-mode refinements
+for $6\,000$ random layouts, \cref{thm:decay} on $20\,000$ random bit-disjoint layouts with
+offsets, \cref{prop:fields} on $30\,000$ random instances (with counterexamples when a hypothesis
+is dropped), and the merging rule on all $360$ admissible pairs of swizzles with $1\le B\le3$,
+$M\le3$, $|S|\le4$.
+
+\subsection{Differential testing of implementations}\label{sec:testing}
+
+We compared the theory with three implementations of \code{composition} and the operations built
+on it:
+\begin{itemize}[leftmargin=1.4em,itemsep=1pt]
+\item \textbf{C++ CuTe}, the headers of CUTLASS at commit \code{af95104} (20 November 2026), with
+ static (compile-time) integers, compiled for the host with \code{clang} against NVIDIA's
+ redistributable CUDA~13.5 headers. Inadmissible compositions are compile errors here.
+\item \textbf{pycute}, the Python module shipped in the same CUTLASS checkout.
+\item \textbf{PyCuTe}~\cite{pycute}, the reference implementation accompanying~\cite{cecka2026}, at
+ commit \code{56cc3d0}.
+\end{itemize}
+Test inputs are small flat layouts drawn at random (outer layout: rank $\le3$, mode sizes
+$\le 8$, strides in $\{0,\dots,24\}$; inner layout: rank $\le 3$, sizes $\le6$, strides $\le12$),
+the same layouts with random nesting, and a ``structured'' family in which the outer layout is a
+column-major, row-major, padded or digit-permuted layout of some size $M\le64$ and the inner one
+is a compact layout of size $M$ or a tile obtained from one by dropping modes. An answer counts as
+correct if it is a layout of the right size whose values equal $\ext A(B(i))$ pointwise; a
+rejection is correct if no composite exists in the sense of \cref{def:composition}. The
+distributions are arbitrary: the counts in \cref{tab:difftest} show that the phenomena exist and
+how they split by cause, not how often they occur in practice.
+
+\begin{table}[t]\centering\small
+\begin{tabular}{@{}llrrrrr@{}}
+\toprule
+implementation & inputs & cases & correct & \shortstack{correctly\\rejected} & \shortstack{silently\\wrong} & \shortstack{rejected,\\composable}\\
+\midrule
+C++ CuTe (static) & random & 3\,000 & 1\,846 & 623 & 153 & 378\\
+C++ CuTe (static) & structured & 3\,000 & 2\,579 & 337 & 50 & 34\\
+PyCuTe & random & 20\,000 & 12\,925 & 4\,665 & 352 & 2\,058\\
+PyCuTe & random, nested & 20\,000 & 12\,930 & 4\,728 & 323 & 2\,019\\
+PyCuTe & structured & 20\,000 & 17\,158 & 2\,624 & 36 & 182\\
+pycute & random & 20\,000 & 10\,505 & 4\,153 & 2\,072 & 3\,270\\
+pycute & structured & 20\,000 & 17\,121 & 2\,466 & 194 & 219\\
+\bottomrule
+\end{tabular}
+\caption{Outcomes of \code{composition(A,B)} against pointwise evaluation.}\label{tab:difftest}
+\end{table}
+
+\paragraph{Silently wrong results.}
+In PyCuTe every wrong result ($352+323+36$) is an instance of interference between modes
+(\cref{sec:deviations}): each mode of the inner layout is composed correctly, the concatenation
+is not the composite, and in fact no composite exists, so the call should have been rejected.
+The same happens in C++. There, in addition, the static stride check accepts a stride that is
+smaller than a mode size without requiring that it divide it, so some \emph{single-mode}
+compositions are wrong as well: of the $153$ wrong results on random inputs, $53$ are pure
+interference, $29$ have a single-mode inner layout, and $71$ contain a wrong single mode. The
+module pycute further lacks the shape-divisibility check, and returns layouts of the wrong size.
+\Cref{tab:examples} lists small instances; all were confirmed by compiling and running them.
+
+\begin{table}[t]\centering\small
+\begin{tabular}{@{}llll@{}}
+\toprule
+$A$ & $B$ & C++ result & $\ext A(B(i))$\\
+\midrule
+$(4,3):(3,1)$ & $(3,4):(1,3)$ & $(3,(2,2)):(3,(9,1))$ & $0,3,6,9,1,4,7,10,2,5,8,11$\\
+$(5,2):(1,8)$ & $4:4$ & $(2,2):(4,8)$ & $0,4,11,18$\\
+$(3,4):(1,5)$ & $(2,2):(1,2)$ & $(2,2):(1,2)$ & $0,1,2,5$\\
+$(6,2):(1,7)$ & $(3,2):(2,3)$ & $(3,2):(2,3)$ & $0,2,4,3,5,8$\\
+$(12,2):(1,13)$ & $(2,2,2):(3,4,6)$ & $(2,2,2):(3,4,6)$ & $0,3,4,7,6,9,10,14$\\
+\bottomrule
+\end{tabular}
+\caption{Compositions that compile with static integers in C++ CuTe and return a layout whose
+values differ from $\ext A\circ\bnd B$. The first views a row-major $4\times3$ matrix through the
+column-major shape $(3,4)$; the third views the first four elements of a padded $3\times4$ matrix
+as $2\times2$. PyCuTe rejects the first two and returns the same wrong layouts for the last
+three. In none of the five cases does a composite exist.}\label{tab:examples}
+\end{table}
+
+\paragraph{Rejected although composable.}
+Typical causes are those predicted in \cref{sec:deviations}: strides with several non-zero digits
+(``sum strides''), and single digits that do not divide the mode size but stay within the range
+where \cref{prop:dilated} applies. Most instances have a very small inner layout (for example
+$(2,1):(3,12)\circ 2:3=2:15$), and we do not claim that they matter in practice; they show that
+the divisibility conditions are sufficient and not necessary.
+
+\paragraph{Other operations (PyCuTe).}
+\code{coalesce} returned the normal form of \cref{cor:coalesce} in all $20\,000$ cases (up to
+the stride of a layout of size $1$). \code{complement} agreed with \cref{thm:complement} in all
+$4\,382$ cases in which a complement in $\rng M$ exists, rounded $M$ up in $7\,239$ cases and
+returned a non-tiling layout in $1\,969$ (\cref{rem:nontiling}). \code{logical\_divide} was correct
+in $14\,346$ cases and correctly rejected $5\,617$; in $33$ further cases its result had a
+different number of elements than $A$, and in $4$ it rejected a divisible pair. These appear to
+share one cause: the complement is extended along the shape of $A$ as given, not of $\coal(A)$, so
+that, for instance, \code{logical\_divide} of $(3,4):(4,12)$---the layout $12:4$ written with two
+modes---by $4:1$ returns $(4,2):(4,16)$, covering $8$ of the $12$ elements (C++ CuTe coalesces
+first and returns $(4,3):(4,16)$). \code{logical\_product}
+was correct in $8\,915$ cases and silently wrong in $25$, again by interference, inside the
+composition $A^*\circ B$. The inverses satisfied their post-conditions in all cases.
+
+\paragraph{Swizzles.}
+The operations of \cref{sec:swzops} were tested against C++ CuTe on random instances with small
+parameters ($B\le2$, $M\le3$; inner layouts with at most three modes for slices and at most five
+binary modes for \code{composition(a, Swizzle)}; initial offset $0$; coordinates of slices static
+or run-time). \Cref{tab:swz} gives the outcomes and
+\cref{tab:swzex} small instances. For \code{slice\_and\_offset}, $286$ of the $600$ inner layouts
+are bit-disjoint in the sense of \cref{def:bitdisjoint}; for these, $270$ slices were correct and
+$16$ did not compile. All $29$ wrong results came from inner layouts that are not
+bit-disjoint---modes that share a bit, or a stride such as $6$ whose multiples overlap in
+binary---as \cref{prop:fields,thm:decay} predict; in $5$ cases CuTe kept a swizzled layout
+although the slice decays. For \code{composition(a, Swizzle)}, in none of the $13$ wrong cases is
+there any \code{Swizzle<B,M,S>} that represents $a\circ\sigma$, so these calls should have been
+rejected; conversely $19$ of the rejected cases are representable. The merging rule behaved as
+stated in \cref{sec:swzops} in all $57$ cases, and \code{upcast} was correct in all $600$ (all
+offsets there are multiples of the cast factor). \code{cosize} differed from the largest offset
+plus one in $198$ of $600$ cases and was too small in $149$ of them; for compact inner layouts of
+power-of-two size it was exact in $294$ cases and too small in $20$, which by
+\cref{lem:swizzle}(d) can only happen for $S<0$.
+
+In PyCuTe, \code{composition} of an $\F_2$-stride layout $A$ with power-of-two mode sizes and an
+integer layout $B$ was tested on $20\,000$ pairs. For the $14\,165$ pairs with a bit-disjoint $B$
+it returned the correct layout in $13\,828$ and rejected the other $337$; none was wrong. For the
+remaining $5\,835$ it was correct in $645$, correctly rejected $2\,256$, rejected $31$ composable
+pairs, and returned a wrong layout in $2\,903$: in $2\,301$ of these every mode is composed
+correctly and the modes interfere, in $602$ a single mode is already wrong.
+\code{right\_inverse} satisfied its post-condition on all $4\,000$ $\F_2$-stride layouts tested.
+CUTLASS's \code{pycute} only evaluates swizzled layouts.
+
+\begin{table}[t]\centering\small
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+operation (C++ CuTe) & cases & rejected & correct & wrong\\
+\midrule
+\code{slice\_and\_offset} of a swizzled layout & 600 & 207 & 364 & 29\\
+\code{composition(a, Swizzle)} & 600 & 201 & 386 & 13\\
+\code{right\_inverse} of a swizzled layout & 600 & 66 & 530 & 4\\
+\code{composition(Swizzle, Swizzle)} & 57 & 22 & 35 & 0\\
+\code{upcast} of a swizzled layout & 600 & 0 & 600 & 0\\
+\code{cosize} of a swizzled layout & 600 & 0 & 402 & 198\\
+\bottomrule
+\end{tabular}
+\caption{Operations on swizzled layouts in C++ CuTe against pointwise evaluation. ``Rejected''
+means that the call does not compile.}\label{tab:swz}
+\end{table}
+
+\begin{table}[t]\centering\small
+\begin{tabular}{@{}p{0.36\linewidth}p{0.33\linewidth}p{0.24\linewidth}@{}}
+\toprule
+call & C++ result and its values & correct values\\
+\midrule
+slice $(1,\_,\_)$ of \code{Sw<1,1,1>}${}\circ(2,2,2):(1,1,4)$ & $(2,2):(1,6)$ plus $1$:\newline $1,2,7,8$ & $1,2,7,4$\\[2pt]
+slice $(1,\_)$ of \code{Sw<2,1,2>}${}\circ(2,4):(1,6)$ & $(2,2):(6,10)$ plus $1$:\newline $1,7,11,17$ & $1,7,15,23$\\[2pt]
+slice $(1,\_)$ of \code{Sw<1,0,1>}${}\circ(2,2):(1,2)$\newline with offset $1$ & $2:3$ plus $0$:\newline $0,3$ & $3,4$\\[2pt]
+$(2,2,4):(8,4,1)\circ{}$\code{Sw<2,0,2>} & \code{Sw<2,0,-2>}${}\circ(2,2,4):(8,4,1)$:\newline $0,8,4,12,5,13,1,9,\dots$ & $0,8,4,12,9,1,13,5,\dots$\\[2pt]
+\code{right\_inverse}$(L)$ for\newline $L={}$\code{Sw<2,0,2>}${}\circ(4,2,2):(1,8,4)$ & $R={}$\code{Sw<2,0,2>}${}\circ(4,2,2):(1,8,4)$:\newline $L(R(k))=0,1,2,3,7,6,5,4,\dots$ & $L(R(k))=k$\\
+\bottomrule
+\end{tabular}
+\caption{Operations on swizzled layouts that compile in C++ CuTe and return a wrong result
+(\code{Sw<B,M,S>} abbreviates \code{Swizzle<B,M,S>}; the correct values are $\sigma(o+f(c))$
+for the slices and $a(\sigma(i))$ in the fourth row). In the first two rows the inner layout is
+not bit-disjoint; in the third, which is not one of the random instances, the initial offset
+overlaps the fixed coordinate; in the last two
+the layout maps the two fields of the swizzle with different bit orders.}\label{tab:swzex}
+\end{table}
+
+\paragraph{Threats to validity.}
+The layouts are small and the distributions synthetic; C++ was exercised with static layouts
+only (with dynamic integers CuTe performs no admissibility checks, by design) and on a host
+compiler; swizzle fields were confined to low bits and swizzled layouts start from offset $0$; all three implementations were tested at one commit each.
